@@ -12,10 +12,14 @@
     <AssemblyName>Civic.Core.Caching</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -115,7 +119,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PO.Core.Configuration\Civic.Core.Configuration.csproj">
+    <ProjectReference Include="..\Civic.Core.Configuration\Civic.Core.Configuration.csproj">
       <Project>{4243bf37-b025-4ad1-874e-8b118869c5cf}</Project>
       <Name>Civic.Core.Configuration</Name>
     </ProjectReference>
