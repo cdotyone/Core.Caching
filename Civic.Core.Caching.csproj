@@ -90,6 +90,9 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\References\VersionInfo.cs">
+      <Link>Properties\VersionInfo.cs</Link>
+    </Compile>
     <Compile Include="CacheManager.cs" />
     <Compile Include="CacheStore.cs" />
     <Compile Include="Configuration\CacheConfigurationSection.cs" />
@@ -126,6 +129,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)nuget\pack.bat http://nuget.civicinc.com/ $(ProjectDir)  $(TargetDir) $(ConfigurationName)</PostBuildEvent>
+    <PostBuildEvent>$(ProjectDir)nuget\pack.bat $(ProjectDir)  $(TargetDir) $(ConfigurationName) $(SolutionDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>
