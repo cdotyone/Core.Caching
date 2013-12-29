@@ -47,14 +47,24 @@ namespace Civic.Core.Caching
 
         #region Methods
 
-		public static TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore = CacheStore.Session) where TV : class 
+        public static TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore = CacheStore.Session) where TV : class
+        {
+            return ReadCache(key, TimeSpan.FromHours(1), nullValue, cacheStore);
+        }
+
+        public static TV ReadCache<TV>(string key, Func<TV> action, CacheStore cacheStore = CacheStore.Session) where TV : class
+        {
+            return ReadCache(key, TimeSpan.FromHours(1), action, cacheStore);
+        }
+
+        public static TV ReadCache<TV>(string key, TimeSpan decay, TV nullValue, CacheStore cacheStore = CacheStore.Session) where TV : class 
 		{
 			try
 			{
 				var value = Current.ReadCache<TV>(key, cacheStore);
                 if (value == null)
                 {
-                    Current.WriteCache(key, nullValue, cacheStore);
+                    Current.WriteCache(key, nullValue, decay, cacheStore);
                     return nullValue;
                 }
 			    return value;
@@ -65,7 +75,7 @@ namespace Civic.Core.Caching
 			}
         }
 
-		public static TV ReadCache<TV>(string key, Func<TV> action, CacheStore cacheStore = CacheStore.Session) where TV : class 
+        public static TV ReadCache<TV>(string key, TimeSpan decay, Func<TV> action, CacheStore cacheStore = CacheStore.Session) where TV : class 
 		{
 			try
 			{
@@ -73,7 +83,7 @@ namespace Civic.Core.Caching
                 if (value == null)
                 {
                     value = action();
-                    Current.WriteCache(key, value, cacheStore);
+                    Current.WriteCache(key, value, decay, cacheStore);
                     return value;
                 }
 			    return value;
@@ -83,6 +93,7 @@ namespace Civic.Core.Caching
 				throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message), ex);
 			}
         }
+
         public static void WriteCache<TV>(string key, TV value, CacheStore cacheStore = CacheStore.Session) where TV : class
         {
             try
