@@ -47,11 +47,17 @@ namespace Civic.Core.Caching
 
         #region Methods
 
-		public static TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore = CacheStore.Session)
+		public static TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore = CacheStore.Session) where TV : class 
 		{
 			try
 			{
-				return Current.ReadCache(key, nullValue, cacheStore);
+				var value = Current.ReadCache<TV>(key, cacheStore);
+                if (value == null)
+                {
+                    Current.WriteCache(key, nullValue, cacheStore);
+                    return nullValue;
+                }
+			    return value;
 			}
 			catch (Exception ex)
 			{
@@ -59,7 +65,25 @@ namespace Civic.Core.Caching
 			}
         }
 
-		public static void WriteCache<TV>(string key, TV value, CacheStore cacheStore = CacheStore.Session)
+		public static TV ReadCache<TV>(string key, Func<TV> action, CacheStore cacheStore = CacheStore.Session) where TV : class 
+		{
+			try
+			{
+				var value = Current.ReadCache<TV>(key, cacheStore);
+                if (value == null)
+                {
+                    value = action();
+                    Current.WriteCache(key, value, cacheStore);
+                    return value;
+                }
+			    return value;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message), ex);
+			}
+        }
+        public static void WriteCache<TV>(string key, TV value, CacheStore cacheStore = CacheStore.Session) where TV : class
         {
             try
 			{
@@ -72,7 +96,7 @@ namespace Civic.Core.Caching
             }
         }
 
-		public static void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore = CacheStore.Session)
+        public static void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore = CacheStore.Session) where TV : class
 		{
 			try
 			{

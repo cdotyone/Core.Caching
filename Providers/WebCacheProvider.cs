@@ -6,7 +6,7 @@ namespace Civic.Core.Caching.Providers
 {
 	public class WebCacheProvider : ICacheProvider
 	{
-		public void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore)
+        public void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore) where TV : class 
 		{
 			if (key == null)
 				throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_WRITE_CACHE_KEY_NULL));
@@ -54,7 +54,42 @@ namespace Civic.Core.Caching.Providers
 			}
 		}
 
-		public TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore)
+	    public TV ReadCache<TV>(string key, CacheStore cacheStore) where TV : class
+	    {
+            if (key == null)
+                throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_READ_CACHE_KEY_NULL));
+
+            var cache = HttpRuntime.Cache;
+            if (cache != null)
+            {
+                try
+                {
+                    switch (cacheStore)
+                    {
+                        case CacheStore.Application:
+                            return (cache[key] == null) ? null : (TV)cache[key];
+                        case CacheStore.Session:
+                            var sessionID = SessionID;
+                            if (!string.IsNullOrEmpty(sessionID))
+                            {
+                                key += sessionID;
+                                return (cache[key] == null) ? null : (TV)cache[key];
+                            }
+                            break;
+                    }
+
+                    throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_READ_CACHE_STORE_NULL));
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message));
+                }
+            }
+
+            return null;
+	    }
+
+	    public TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore) where TV : class 
 		{
 			if (key == null)
 				throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_READ_CACHE_KEY_NULL));
@@ -89,7 +124,7 @@ namespace Civic.Core.Caching.Providers
 			return nullValue;
 		}
 
-		public void WriteCache<TV>(string key, TV value, CacheStore cacheStore)
+        public void WriteCache<TV>(string key, TV value, CacheStore cacheStore) where TV : class 
 		{
 			WriteCache(key, value, TimeSpan.FromHours(1), cacheStore);
 		}
