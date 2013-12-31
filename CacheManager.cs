@@ -35,29 +35,49 @@ namespace Civic.Core.Caching
 		{
 			get
 			{
-				if (_sInternalSyncObject == null)
+				if (_internalSyncObject == null)
 				{
-					object obj2 = new object();
-					Interlocked.CompareExchange(ref _sInternalSyncObject, obj2, null);
+					var obj2 = new object();
+					Interlocked.CompareExchange(ref _internalSyncObject, obj2, null);
 				}
-				return _sInternalSyncObject;
+				return _internalSyncObject;
 			}
 		}
-		private static object _sInternalSyncObject;
+		private static object _internalSyncObject;
 
         #region Methods
 
-        public static TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore = CacheStore.Session) where TV : class
+        public static TV ReadSessionCache<TV>(string key, TV nullValue) where TV : class
         {
-            return ReadCache(key, TimeSpan.FromHours(1), nullValue, cacheStore);
+            return readCache(key, TimeSpan.FromMinutes(60), nullValue, CacheStore.Session);
         }
 
-        public static TV ReadCache<TV>(string key, Func<TV> action, CacheStore cacheStore = CacheStore.Session) where TV : class
+        public static TV ReadSessionCacheDelegate<TV>(string key, Func<TV> action) where TV : class
         {
-            return ReadCache(key, TimeSpan.FromHours(1), action, cacheStore);
+            return readCache(key, TimeSpan.FromMinutes(60), action, CacheStore.Session);
         }
 
-        public static TV ReadCache<TV>(string key, TimeSpan decay, TV nullValue, CacheStore cacheStore = CacheStore.Session) where TV : class 
+        public static TV ReadCache<TV>(string key, TV nullValue) where TV : class
+        {
+            return readCache(key, TimeSpan.FromMinutes(60), nullValue, CacheStore.Application);
+        }
+
+        public static TV ReadCacheDelegate<TV>(string key, Func<TV> action) where TV : class
+        {
+            return readCache(key, TimeSpan.FromMinutes(60), action, CacheStore.Application);
+        }
+
+        public static TV ReadCache<TV>(string key, TimeSpan decay, TV nullValue) where TV : class
+        {
+            return readCache(key, decay, nullValue, CacheStore.Application);
+        }
+
+        public static TV ReadCacheDelegate<TV>(string key, TimeSpan decay, Func<TV> action) where TV : class
+        {
+            return readCache(key, decay, action, CacheStore.Application);
+        }
+
+        private static TV readCache<TV>(string key, TimeSpan decay, TV nullValue, CacheStore cacheStore) where TV : class 
 		{
 			try
 			{
@@ -75,7 +95,7 @@ namespace Civic.Core.Caching
 			}
         }
 
-        public static TV ReadCache<TV>(string key, TimeSpan decay, Func<TV> action, CacheStore cacheStore = CacheStore.Session) where TV : class 
+        private static TV readCache<TV>(string key, TimeSpan decay, Func<TV> action, CacheStore cacheStore) where TV : class 
 		{
 			try
 			{
@@ -94,29 +114,51 @@ namespace Civic.Core.Caching
 			}
         }
 
-        public static void WriteCache<TV>(string key, TV value, CacheStore cacheStore = CacheStore.Session) where TV : class
+        public static void WriteSessionCache<TV>(string key, TV value) where TV : class
         {
             try
-			{
-				if (cacheStore == CacheStore.DoNotStore) return;
-				Current.WriteCache(key, value, cacheStore);
-			}
+            {
+                Current.WriteCache(key, value, TimeSpan.FromMinutes(60), CacheStore.Session);
+            }
             catch (Exception ex)
             {
-            	throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message), ex);
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store: Session\r\nError:{1}", key, ex.Message), ex);
             }
         }
 
-        public static void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore = CacheStore.Session) where TV : class
+        public static void WriteCache<TV>(string key, TV value) where TV : class
+        {
+            try
+			{
+                Current.WriteCache(key, value, TimeSpan.FromMinutes(60), CacheStore.Application);
+			}
+            catch (Exception ex)
+            {
+            	throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store: Application\r\nError:{1}", key, ex.Message), ex);
+            }
+        }
+
+        public static void WriteSessionCache<TV>(string key, TV value, TimeSpan decay) where TV : class
+        {
+            try
+            {
+                Current.WriteCache(key, value, decay, CacheStore.Session);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nError:{1}", key, ex.Message), ex);
+            }
+        }
+
+        public static void WriteCache<TV>(string key, TV value, TimeSpan decay) where TV : class
 		{
 			try
 			{
-				if (cacheStore == CacheStore.DoNotStore) return;
-				Current.WriteCache(key, value, decay, cacheStore);
+				Current.WriteCache(key, value, decay, CacheStore.Application);
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message), ex);
+				throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nError:{1}", key, ex.Message), ex);
 			}
 		}
 

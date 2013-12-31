@@ -6,6 +6,7 @@ namespace Civic.Core.Caching.Providers
 {
     public class SqlProvider : ICacheProvider
     {
+
         public void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore = CacheStore.Session) where TV : class 
         {
             try
@@ -23,7 +24,6 @@ namespace Civic.Core.Caching.Providers
                         cacheStore, ex.Message));
             }
         }
-
 
         public TV ReadCache<TV>(string key, CacheStore cacheStore) where TV : class
         {
@@ -47,34 +47,5 @@ namespace Civic.Core.Caching.Providers
             return null;
         }
 
-        public TV ReadCache<TV>(string key, TV nullValue, CacheStore cacheStore = CacheStore.Session) where TV : class 
-        {
-            Cache cache = HttpRuntime.Cache;
-            if (cache != null)
-            {
-                try
-                {
-                    if (cache[key] != null)
-                    {
-                        return (TV) cache[key];
-                    }
-                    return nullValue;
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException(
-                        string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key,
-                            cacheStore, ex.Message));
-                }
-            }
-
-            return nullValue;
-        }
-
-
-        public void WriteCache<TV>(string key, TV value, CacheStore cacheStore = CacheStore.Session) where TV : class 
-        {
-            WriteCache(key, value, TimeSpan.FromHours(1), cacheStore);
-        }
     }
 }
