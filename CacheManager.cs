@@ -47,119 +47,85 @@ namespace Civic.Core.Caching
 
         #region Methods
 
-        public static TV ReadSessionCache<TV>(string key, TV nullValue) where TV : class
+        public static TV ReadCache<TV>(String scope, string key, TV nullValue) where TV : class
         {
-            return readCache(key, TimeSpan.FromMinutes(60), nullValue, CacheStore.Session);
+            return readCache(scope, key, TimeSpan.FromMinutes(60), nullValue);
         }
 
-        public static TV ReadSessionCacheDelegate<TV>(string key, Func<TV> action) where TV : class
+        public static TV ReadCacheDelegate<TV>(String scope, string key, Func<TV> action) where TV : class
         {
-            return readCache(key, TimeSpan.FromMinutes(60), action, CacheStore.Session);
+            return readCache(scope, key, TimeSpan.FromMinutes(60), action);
         }
 
-        public static TV ReadCache<TV>(string key, TV nullValue) where TV : class
+        public static TV ReadCache<TV>(String scope, string key, TimeSpan decay, TV nullValue) where TV : class
         {
-            return readCache(key, TimeSpan.FromMinutes(60), nullValue, CacheStore.Application);
+            return readCache(scope, key, decay, nullValue);
         }
 
-        public static TV ReadCacheDelegate<TV>(string key, Func<TV> action) where TV : class
+        public static TV ReadCacheDelegate<TV>(String scope, string key, TimeSpan decay, Func<TV> action) where TV : class
         {
-            return readCache(key, TimeSpan.FromMinutes(60), action, CacheStore.Application);
+            return readCache(scope, key, decay, action);
         }
 
-        public static TV ReadCache<TV>(string key, TimeSpan decay, TV nullValue) where TV : class
-        {
-            return readCache(key, decay, nullValue, CacheStore.Application);
-        }
-
-        public static TV ReadCacheDelegate<TV>(string key, TimeSpan decay, Func<TV> action) where TV : class
-        {
-            return readCache(key, decay, action, CacheStore.Application);
-        }
-
-        private static TV readCache<TV>(string key, TimeSpan decay, TV nullValue, CacheStore cacheStore) where TV : class 
+        private static TV readCache<TV>(String scope, string key, TimeSpan decay, TV nullValue) where TV : class 
 		{
 			try
 			{
-				var value = Current.ReadCache<TV>(key, cacheStore);
+                var value = Current.ReadCache<TV>(scope, key);
                 if (value == null)
                 {
-                    Current.WriteCache(key, nullValue, decay, cacheStore);
+                    Current.WriteCache(scope, key, nullValue, decay);
                     return nullValue;
                 }
 			    return value;
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message), ex);
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Scope:{1}\r\nError:{2}", key, scope, ex.Message), ex);
 			}
         }
 
-        private static TV readCache<TV>(string key, TimeSpan decay, Func<TV> action, CacheStore cacheStore) where TV : class 
+        private static TV readCache<TV>(String scope, string key, TimeSpan decay, Func<TV> action) where TV : class 
 		{
 			try
 			{
-				var value = Current.ReadCache<TV>(key, cacheStore);
+                var value = Current.ReadCache<TV>(scope, key);
                 if (value == null)
                 {
                     value = action();
-                    Current.WriteCache(key, value, decay, cacheStore);
+                    Current.WriteCache(scope, key, value, decay);
                     return value;
                 }
 			    return value;
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message), ex);
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, scope, ex.Message), ex);
 			}
         }
 
-        public static void WriteSessionCache<TV>(string key, TV value) where TV : class
-        {
-            try
-            {
-                Current.WriteCache(key, value, TimeSpan.FromMinutes(60), CacheStore.Session);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store: Session\r\nError:{1}", key, ex.Message), ex);
-            }
-        }
-
-        public static void WriteCache<TV>(string key, TV value) where TV : class
+        public static void WriteCache<TV>(String scope, string key, TV value) where TV : class
         {
             try
 			{
-                Current.WriteCache(key, value, TimeSpan.FromMinutes(60), CacheStore.Application);
+                Current.WriteCache(scope, key, value, TimeSpan.FromMinutes(60));
 			}
             catch (Exception ex)
             {
-            	throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store: Application\r\nError:{1}", key, ex.Message), ex);
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
             }
         }
 
-        public static void WriteSessionCache<TV>(string key, TV value, TimeSpan decay) where TV : class
-        {
-            try
-            {
-                Current.WriteCache(key, value, decay, CacheStore.Session);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nError:{1}", key, ex.Message), ex);
-            }
-        }
-
-        public static void WriteCache<TV>(string key, TV value, TimeSpan decay) where TV : class
+        public static void WriteCache<TV>(String scope, string key, TV value, TimeSpan decay) where TV : class
 		{
 			try
 			{
-				Current.WriteCache(key, value, decay, CacheStore.Application);
+                Current.WriteCache(scope, key, value, decay);
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nError:{1}", key, ex.Message), ex);
-			}
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
+            }
 		}
 
         #endregion

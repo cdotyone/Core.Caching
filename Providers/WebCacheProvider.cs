@@ -7,55 +7,37 @@ namespace Civic.Core.Caching.Providers
 	public class WebCacheProvider : ICacheProvider
 	{
 
-        public void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore) where TV : class 
+        public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
 		{
 			if (key == null)
 				throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_WRITE_CACHE_KEY_NULL));
 
 			try
 			{
+			    key = scope + "|" + key;
 				var cache = HttpRuntime.Cache;
 				if (cache != null)
 				{
-					switch (cacheStore)
+					// ReSharper disable CompareNonConstrainedGenericWithNull
+					if (typeof(TV).IsValueType) cache[key] = value;
+					else
 					{
-						case CacheStore.Application:
-							// ReSharper disable CompareNonConstrainedGenericWithNull
-							if (typeof(TV).IsValueType) cache[key] = value;
-							else
-							{
-								if (value == null) cache.Remove(key);
-								else cache.Add(key, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null); 
-							}
-							break;
-						case CacheStore.Session:
-							var sessionID = SessionID;
-							if (!string.IsNullOrEmpty(sessionID))
-							{
-								key += sessionID;
-								if (typeof(TV).IsValueType) cache[key] = value;
-								else
-								{
-									if (value == null) cache.Remove(key);
-									else cache.Add(key, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
-								}
-							}
-							else
-							{
-								throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_WRITE_CACHE_STORE_NULL));
-							}
-							// ReSharper restore CompareNonConstrainedGenericWithNull
-							break;
+						if (value == null) cache.Remove(key);
+						else cache.Add(key, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null); 
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message));
+                throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, scope, ex.Message));
 			}
 		}
 
-	    public TV ReadCache<TV>(string key, CacheStore cacheStore) where TV : class
+	    public void RemoveAllByScope(string scope)
+	    {
+	    }
+
+	    public TV ReadCache<TV>(string scope, string key) where TV : class
 	    {
             if (key == null)
                 throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_READ_CACHE_KEY_NULL));
@@ -63,54 +45,19 @@ namespace Civic.Core.Caching.Providers
             var cache = HttpRuntime.Cache;
             if (cache != null)
             {
+                key = scope + "|" + key;
                 try
                 {
-                    switch (cacheStore)
-                    {
-                        case CacheStore.Application:
-                            return (cache[key] == null) ? null : (TV)cache[key];
-                        case CacheStore.Session:
-                            var sessionID = SessionID;
-                            if (!string.IsNullOrEmpty(sessionID))
-                            {
-                                key += sessionID;
-                                return (cache[key] == null) ? null : (TV)cache[key];
-                            }
-                            break;
-                    }
-
-                    throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_READ_CACHE_STORE_NULL));
+                    return (cache[key] == null) ? null : (TV) cache[key];
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, cacheStore, ex.Message));
+                    throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, scope, ex.Message));
                 }
             }
 
             return null;
 	    }
-
-		public string SessionID
-		{
-			get
-			{
-				string sessionID = string.Empty;
-				if (HttpContext.Current == null) return string.Empty;
-				if (HttpContext.Current.Session==null)
-				{
-					var cookie = HttpContext.Current.Request.Cookies["CoreCacheSessionId"];
-					if(cookie!=null) sessionID = cookie.Value;
-					if(string.IsNullOrEmpty(sessionID))
-					{
-						sessionID = Guid.NewGuid().ToString().Replace("-", "");
-						cookie = new HttpCookie("CoreCacheSessionId",sessionID);
-						HttpContext.Current.Response.Cookies.Add(cookie);
-						return sessionID;
-					}
-				} else return HttpContext.Current.Session.SessionID;
-				return sessionID;
-			}
-		}
 
 	}
 }

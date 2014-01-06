@@ -6,15 +6,19 @@ namespace Civic.Core.Caching.Providers
     {
 		#region Methods
 
-        public TV ReadCache<TV>(string key, CacheStore cacheStore) where TV : class 
+        public TV ReadCache<TV>(string scope, string key) where TV : class 
 	    {
 	        return null;
 	    }
 
-        public void WriteCache<TV>(string key, TV value, TimeSpan decay, CacheStore cacheStore) where TV : class 
+        public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
 		{
 		}
 
-		#endregion
+	    public void RemoveAllByScope(string scope)
+	    {
+	    }
+
+	    #endregion
     }
 }
