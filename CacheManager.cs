@@ -6,9 +6,35 @@ using Civic.Core.Configuration;
 
 namespace Civic.Core.Caching
 {
+    /// <summary>
+    /// Provides Caching Abstraction Layer
+    /// </summary>
 	public static class CacheManager
     {
-		public static ICacheProvider Current
+        #region Fields
+
+        public static CacheConfigurationSection Configuration
+        {
+            get
+            {
+                if (_configuration == null)
+                {
+                    Configuration = CacheConfigurationSection.Current;
+                }
+                return _configuration;
+            }
+            set
+            {
+                lock (InternalSyncObject)
+                {
+                    _configuration = value;
+                }
+            }
+        }
+
+        private static CacheConfigurationSection _configuration;
+
+        public static ICacheProvider Current
 		{
 			get
 			{
@@ -45,36 +71,133 @@ namespace Civic.Core.Caching
 		}
 		private static object _internalSyncObject;
 
+        #endregion Fields
+
         #region Methods
 
-        public static TV ReadCache<TV>(String scope, string key, TV nullValue) where TV : class
+        #region ReadCache
+
+        public static TV ReadCache<TV>(string scope, string key, TV nullValue) where TV : class
         {
-            return readCache(scope, key, TimeSpan.FromMinutes(60), nullValue);
+            return readCache(null, scope, key, TimeSpan.FromMinutes(60), nullValue);
         }
 
-        public static TV ReadCacheDelegate<TV>(String scope, string key, Func<TV> action) where TV : class
+        public static TV ReadCacheDelegate<TV>(string scope, string key, Func<TV> action) where TV : class
         {
-            return readCache(scope, key, TimeSpan.FromMinutes(60), action);
+            return readCache(null, scope, key, TimeSpan.FromMinutes(60), action);
         }
 
-        public static TV ReadCache<TV>(String scope, string key, TimeSpan decay, TV nullValue) where TV : class
+        public static TV ReadCache<TV>(string scope, string key, TimeSpan decay, TV nullValue) where TV : class
         {
-            return readCache(scope, key, decay, nullValue);
+            return readCache(null, scope, key, decay, nullValue);
         }
 
-        public static TV ReadCacheDelegate<TV>(String scope, string key, TimeSpan decay, Func<TV> action) where TV : class
+        public static TV ReadCacheDelegate<TV>(string scope, string key, TimeSpan decay, Func<TV> action) where TV : class
         {
-            return readCache(scope, key, decay, action);
+            return readCache(null, scope, key, decay, action);
         }
 
-        private static TV readCache<TV>(String scope, string key, TimeSpan decay, TV nullValue) where TV : class 
+        #endregion ReadCache
+
+        #region ReadProvider
+
+        public static TV ReadProviderCache<TV>(string provider, string scope, string key, TV nullValue) where TV : class
+        {
+            return readCache(provider, scope, key, TimeSpan.FromMinutes(60), nullValue);
+        }
+
+        public static TV ReadProviderCacheDelegate<TV>(string provider, string scope, string key, Func<TV> action) where TV : class
+        {
+            return readCache(provider, scope, key, TimeSpan.FromMinutes(60), action);
+        }
+
+        public static TV ReadProviderCache<TV>(string provider, string scope, string key, TimeSpan decay, TV nullValue) where TV : class
+        {
+            return readCache(provider, scope, key, decay, nullValue);
+        }
+
+        public static TV ReadProviderCacheDelegate<TV>(string provider, string scope, string key, TimeSpan decay, Func<TV> action) where TV : class
+        {
+            return readCache(provider, scope, key, decay, action);
+        }
+
+        #endregion ReadProvider
+
+        #region WriteCache
+
+        public static void WriteCache<TV>(string scope, string key, TV value) where TV : class
+        {
+            try
+            {
+                Current.WriteCache(scope, key, value, TimeSpan.FromMinutes(60));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
+            }
+        }
+
+        public static void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class
+        {
+            try
+            {
+                Current.WriteCache(scope, key, value, decay);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
+            }
+        }
+
+        #endregion WriteCache
+
+        #region WriteProviderCache
+
+        public static void WriteProviderCache<TV>(string provider, string scope, string key, TV value) where TV : class
+        {
+            try
+            {
+                ICacheProvider cache = Current;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+                
+                cache.WriteCache(scope, key, value, TimeSpan.FromMinutes(60));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
+            }
+        }
+
+        public static void WriteProviderCache<TV>(string provider, string scope, string key, TV value, TimeSpan decay) where TV : class
+        {
+            try
+            {
+                ICacheProvider cache = Current;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+
+                cache.WriteCache(scope, key, value, decay);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
+            }
+        }
+
+        #endregion WriteProviderCache
+
+        #region Privates
+
+        private static TV readCache<TV>(string provider, string scope, string key, TimeSpan decay, TV nullValue) where TV : class 
 		{
 			try
 			{
-                var value = Current.ReadCache<TV>(scope, key);
+			    ICacheProvider cache = Current;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+
+                var value = cache.ReadCache<TV>(scope, key);
                 if (value == null)
                 {
-                    Current.WriteCache(scope, key, nullValue, decay);
+                    cache.WriteCache(scope, key, nullValue, decay);
                     return nullValue;
                 }
 			    return value;
@@ -85,15 +208,18 @@ namespace Civic.Core.Caching
 			}
         }
 
-        private static TV readCache<TV>(String scope, string key, TimeSpan decay, Func<TV> action) where TV : class 
+        private static TV readCache<TV>(string provider, string scope, string key, TimeSpan decay, Func<TV> action) where TV : class 
 		{
 			try
 			{
-                var value = Current.ReadCache<TV>(scope, key);
+                ICacheProvider cache = Current;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+
+                var value = cache.ReadCache<TV>(scope, key);
                 if (value == null)
                 {
                     value = action();
-                    Current.WriteCache(scope, key, value, decay);
+                    cache.WriteCache(scope, key, value, decay);
                     return value;
                 }
 			    return value;
@@ -104,30 +230,31 @@ namespace Civic.Core.Caching
 			}
         }
 
-        public static void WriteCache<TV>(String scope, string key, TV value) where TV : class
+        #endregion Privates
+
+        #region RemoveAll
+
+        public static void RemoveAllProvider(string provider, string scope)
         {
             try
-			{
-                Current.WriteCache(scope, key, value, TimeSpan.FromMinutes(60));
-			}
+            {
+                ICacheProvider cache = Current;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+                cache.RemoveAllByScope(scope);
+            }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
+                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nCache Store:{0}\r\nError:{1}", scope, ex.Message), ex);
             }
         }
 
-        public static void WriteCache<TV>(String scope, string key, TV value, TimeSpan decay) where TV : class
-		{
-			try
-			{
-                Current.WriteCache(scope, key, value, decay);
-			}
-			catch (Exception ex)
-			{
-                throw new Exception(string.Format("Error Accessing Cache Provider.\r\nKey:{0}\r\nCache Store:{1} Application\r\nError:{2}", key, scope, ex.Message), ex);
-            }
-		}
+        public static void RemoveAll(string scope)
+        {
+            RemoveAllProvider(null, scope);
+        }
 
+        #endregion RemoveAll
+        
         #endregion
     }
 }

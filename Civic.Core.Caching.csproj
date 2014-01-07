@@ -21,6 +21,8 @@
     <SccProvider>
     </SccProvider>
     <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -84,7 +86,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.5.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -99,6 +102,8 @@
     </Compile>
     <Compile Include="CacheManager.cs" />
     <Compile Include="Configuration\CacheConfigurationSection.cs" />
+    <Compile Include="Configuration\CacheProviderElement.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -108,7 +113,7 @@
     <Compile Include="Providers\NoCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\WebCacheProvider.cs" />
-    <Compile Include="Providers\SqlProvider.cs" />
+    <Compile Include="Providers\SqlCacheProvider.cs" />
     <Compile Include="SR.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +122,7 @@
     </None>
     <None Include="Nuget\Civic.Core.Caching.nuspec" />
     <None Include="Nuget\pack.bat" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -135,4 +141,5 @@
   <PropertyGroup>
     <PostBuildEvent>$(ProjectDir)nuget\pack.bat $(ProjectDir)  $(TargetDir) $(ConfigurationName) $(SolutionDir)</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

@@ -7,25 +7,18 @@ namespace Civic.Core.Caching.Configuration
 
 	public class CacheConfigurationSection : ConfigurationSection
 	{
-		#region Members
-
-		private const string SECTION_NAME = "coreFrameworkCaching";
-		private const string ASSEMBLY = "assembly";
-		private const string TYPE = "type";
-
-		#endregion
-
-		#region Properties
+      
+        #region Properties
 
 		/// <summary>
 		/// Name of the assembly for the cache provider
 		/// </summary>
-		[ConfigurationProperty(ASSEMBLY, IsRequired = false)]
+		[ConfigurationProperty(Constants.ASSEMBLY, IsRequired = false)]
 		public string Assembly
 		{
 			get
 			{
-				var name = (string)base[ASSEMBLY];
+                var name = (string)base[Constants.ASSEMBLY];
 				return string.IsNullOrEmpty(name) ? GetType().Assembly.FullName : name;
 			}
 		}
@@ -33,23 +26,65 @@ namespace Civic.Core.Caching.Configuration
 		/// <summary>
 		/// Name of the Type for the cache provider
 		/// </summary>
-		[ConfigurationProperty(TYPE, IsRequired = false)]
+        [ConfigurationProperty(Constants.TYPE, IsRequired = false)]
 		public string Type
 		{
 			get
 			{
-				var name = (string)base[TYPE];
+                var name = (string)base[Constants.TYPE];
 				return string.IsNullOrEmpty(name) ? typeof(WebCacheProvider).FullName : name;
 			}
 		}
 
+        /// <summary>
+        /// The current configuration for caching module
+        /// </summary>
 		public static CacheConfigurationSection Current
 		{
 			get
 			{
-				return ConfigurationFactory.ReadConfigSection<CacheConfigurationSection>(SectionName) ?? new CacheConfigurationSection();
-			}
+                if (_coreConfig == null) _coreConfig = (CacheConfigurationSection)ConfigurationManager.GetSection(SectionName);
+                if (_coreConfig == null || _coreConfig.Providers.Count == 0)
+                {
+                    if (_coreConfig == null)
+                        _coreConfig = new CacheConfigurationSection();
+
+                    _coreConfig.Providers.Add(new CacheProviderElement(new WebCacheProvider()));
+                }
+
+                return _coreConfig;
+            }
 		}
+        private static CacheConfigurationSection _coreConfig;
+
+        /// <summary>
+        /// Gets or sets the typename for the skin for the header and footer
+        /// </summary>
+        [ConfigurationProperty(Constants.CONFIG_PROP_DEFAULTPROVIDER, IsRequired = false, DefaultValue = Constants.CONFIG_DEFAULTPROVIDER)]
+        public string DefaultProvider
+        {
+            get { return (string)this[Constants.CONFIG_PROP_DEFAULTPROVIDER]; }
+            set { this[Constants.CONFIG_PROP_DEFAULTPROVIDER] = value; }
+        }
+
+        /// <summary>
+        /// Gets the collection of custom link type element collections.
+        /// </summary>
+        [ConfigurationProperty("", IsDefaultCollection = true)]
+        public NamedElementCollection<CacheProviderElement> Providers
+        {
+            get
+            {
+                if (_providers == null) _providers = (NamedElementCollection<CacheProviderElement>)base["items"];
+                if (_providers == null || _providers.Count == 0) _providers = null;
+                return _providers ?? (_providers = new NamedElementCollection<CacheProviderElement>
+                    {
+                        new CacheProviderElement(new WebCacheProvider()){Name = "WebCacheProvider"},
+                        new CacheProviderElement(new NoCacheProvider()){Name = "NoCacheProvider"}
+                    });
+            }
+        }
+        private NamedElementCollection<CacheProviderElement> _providers;
 
 		#endregion
 
@@ -60,7 +95,7 @@ namespace Civic.Core.Caching.Configuration
 		/// </summary>
 		public static string SectionName
 		{
-			get { return SECTION_NAME; }
+			get { return Constants.CORE_CACHE_SECTION; }
 		}
 
 		#endregion

@@ -1,11 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Caching;
+using Civic.Core.Caching.Configuration;
 
 namespace Civic.Core.Caching.Providers
 {
 	public class WebCacheProvider : ICacheProvider
 	{
+        private static Dictionary<string,List<string>> _scopeMap = new Dictionary<string, List<string>>();
+
+        /// <summary>
+        /// The configuration for this provider
+        /// </summary>
+        public CacheProviderElement Configuration { get; set; }
 
         public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
 		{
@@ -14,7 +22,9 @@ namespace Civic.Core.Caching.Providers
 
 			try
 			{
-			    key = scope + "|" + key;
+                key = scope + "|" + key;
+                addToScopeMap(scope, key);
+
 				var cache = HttpRuntime.Cache;
 				if (cache != null)
 				{
@@ -33,8 +43,42 @@ namespace Civic.Core.Caching.Providers
 			}
 		}
 
+	    private static void addToScopeMap(string scope, string key)
+	    {
+	        if (!_scopeMap.ContainsKey(scope))
+	        {
+	            lock (_scopeMap)
+	            {
+	                _scopeMap[scope] = new List<string>();
+	            }
+
+	            if (!_scopeMap[scope].Contains(key))
+	            {
+	                lock (_scopeMap[scope])
+	                {
+	                    _scopeMap[scope].Add(key);
+	                }
+	            }
+	        }
+	    }
+
 	    public void RemoveAllByScope(string scope)
 	    {
+            var cache = HttpRuntime.Cache;
+	        if (cache != null)
+	        {
+                if (_scopeMap.ContainsKey(scope))
+                {
+                    foreach (var key in _scopeMap[scope])
+                    {
+                        cache.Remove(key);
+                    }
+                    lock (_scopeMap[scope])
+                    {
+                        _scopeMap[scope].Clear();
+                    }
+                }
+	        }
 	    }
 
 	    public TV ReadCache<TV>(string scope, string key) where TV : class
@@ -46,6 +90,8 @@ namespace Civic.Core.Caching.Providers
             if (cache != null)
             {
                 key = scope + "|" + key;
+                addToScopeMap(scope, key);
+
                 try
                 {
                     return (cache[key] == null) ? null : (TV) cache[key];
@@ -58,6 +104,7 @@ namespace Civic.Core.Caching.Providers
 
             return null;
 	    }
+
 
 	}
 }

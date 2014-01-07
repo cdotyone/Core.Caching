@@ -1,9 +1,15 @@
 ﻿using System;
+using Civic.Core.Caching.Configuration;
 
 namespace Civic.Core.Caching.Providers
 {
 	public class NoCacheProvider : ICacheProvider
     {
+        /// <summary>
+        /// The configuration for this provider
+        /// </summary>
+        public CacheProviderElement Configuration { get; set; }
+
 		#region Methods
 
         public TV ReadCache<TV>(string scope, string key) where TV : class 

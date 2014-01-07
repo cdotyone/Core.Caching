@@ -2,25 +2,30 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using Civic.Core.Caching.Configuration;
 using Newtonsoft.Json;
 
 namespace Civic.Core.Caching.Providers
 {
-    public class SqlProvider : ICacheProvider
+    public class SqlCacheProvider : ICacheProvider
     {
+        /// <summary>
+        /// The configuration for this provider
+        /// </summary>
+        public CacheProviderElement Configuration { get; set; }
 
         public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
         {
             try
             {
-                if (value != null)
+                if (value == null)
                 {
-                    string output = JsonConvert.SerializeObject(value);
-                    saveCachetoDB(scope, key, output, decay);
+                    saveCachetoDB(scope, key, null, TimeSpan.MinValue);
                 }
                 else
                 {
-                    saveCachetoDB(scope, key, null, TimeSpan.MinValue);                    
+                    string output = JsonConvert.SerializeObject(value);
+                    saveCachetoDB(scope, key, output, decay);
                 }
             }
             catch (Exception ex)
@@ -53,11 +58,23 @@ namespace Civic.Core.Caching.Providers
             return null;
         }
 
-        private static void saveCachetoDB(string scope, string cacheKey, string value, TimeSpan decay)
+        private string ConnectionString
         {
-            var constring = ConfigurationManager.ConnectionStrings["Civic"].ConnectionString;
+            get
+            {
+                string connName = Configuration.Attributes.ContainsKey(Constants.CONFIG_PROP_CONNECTIONNAME) ? 
+                                      Configuration.Attributes[Constants.CONFIG_PROP_CONNECTIONNAME] : 
+                                      Constants.CONFIG_DEFAULT_CONNECTIONNAME;
+                var constring = ConfigurationManager.ConnectionStrings[connName].ConnectionString;
+                return constring;
+            }
+        }
 
-            var database = new SqlConnection(constring);
+        private void saveCachetoDB(string scope, string cacheKey, string value, TimeSpan decay)
+        {
+            var database = new SqlConnection(ConnectionString);
+            database.Open();
+
             using (var command = database.CreateCommand())
             {
                 command.CommandType = CommandType.StoredProcedure;
@@ -103,11 +120,11 @@ namespace Civic.Core.Caching.Providers
             }
         }
 
-        private static string readCachefromDB(string scope, string cacheKey)
+        private string readCachefromDB(string scope, string cacheKey)
         {
-            var constring = ConfigurationManager.ConnectionStrings["Civic"].ConnectionString;
+            var database = new SqlConnection(ConnectionString);
+            database.Open();
 
-            var database = new SqlConnection(constring);
             using (var command = database.CreateCommand())
             {
                 command.CommandType = CommandType.StoredProcedure;
@@ -127,13 +144,15 @@ namespace Civic.Core.Caching.Providers
                 param.DbType = DbType.String;
                 command.Parameters.Add(param);
 
-                string value;
                 using (IDataReader dataReader = command.ExecuteReader())
                 {
-                    value = dataReader["Value"].ToString();
+                    while (dataReader.Read())
+                    {
+                        return dataReader["Value"].ToString();
+                    }
                 }
 
-                return value;
+                return null;
             }
         }
     }
