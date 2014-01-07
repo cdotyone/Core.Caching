@@ -49,7 +49,7 @@ namespace Civic.Core.Caching.Configuration
 		public ICacheProvider Provider
 		{
 			get {
-				return _provider ?? (_provider = (ICacheProvider) DynamicInstance.CreateInstance(AssemblyName, TypeName));
+				return _provider ?? (_provider = (ICacheProvider) DynamicInstance.CreateInstance(AssemblyName, TypeName, this));
 			}
 		}
 
