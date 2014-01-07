@@ -70,12 +70,12 @@ namespace Civic.Core.Caching.Configuration
         /// <summary>
         /// Gets the collection of custom link type element collections.
         /// </summary>
-        [ConfigurationProperty("providers", IsDefaultCollection = true)]
+        [ConfigurationProperty("", IsDefaultCollection = true)]
         public NamedElementCollection<CacheProviderElement> Providers
         {
             get
             {
-                if (_providers == null) _providers = (NamedElementCollection<CacheProviderElement>)base["providers"];
+                if (_providers == null) _providers = (NamedElementCollection<CacheProviderElement>)this[""];
                 if (_providers == null || _providers.Count == 0) _providers = null;
                 return _providers ?? (_providers = new NamedElementCollection<CacheProviderElement>
                     {
