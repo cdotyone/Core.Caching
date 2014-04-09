@@ -24,7 +24,10 @@ namespace Civic.Core.Caching.Providers
                 }
                 else
                 {
-                    string output = JsonConvert.SerializeObject(value);
+                    string output = JsonConvert.SerializeObject(value, new JsonSerializerSettings()
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    });
                     saveCachetoDB(scope, key, output, decay);
                 }
             }
