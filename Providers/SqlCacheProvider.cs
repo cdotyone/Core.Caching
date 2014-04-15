@@ -98,11 +98,11 @@ namespace Civic.Core.Caching.Providers
 
                 if (string.IsNullOrEmpty(value))
                 {
-                    command.CommandText = "[dbo].[usp_SystemCacheRemove]";
+                    command.CommandText = "[civic].[usp_SystemCacheRemove]";
                 }
                 else
                 {
-                    command.CommandText = "[dbo].[usp_SystemCacheSave]";
+                    command.CommandText = "[civic].[usp_SystemCacheSave]";
 
                     param = command.CreateParameter();
                     param.Direction = ParameterDirection.Input;
@@ -131,7 +131,7 @@ namespace Civic.Core.Caching.Providers
             using (var command = database.CreateCommand())
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = "[dbo].[usp_SystemCacheGet]";
+                command.CommandText = "[civic].[usp_SystemCacheGet]";
 
                 var param = command.CreateParameter();
                 param.Direction = ParameterDirection.Input;
