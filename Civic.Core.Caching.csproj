@@ -109,6 +109,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Providers\MultiCacheProvider.cs" />
     <Compile Include="Providers\ICacheProvider.cs" />
     <Compile Include="Providers\NoCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

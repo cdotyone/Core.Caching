@@ -2,7 +2,9 @@
 {
     internal class Constants
     {
-		public const string CONFIG_PROP_PROVIDER = "provider";
+        public const string CONFIG_PROP_PROVIDERS = "providers";
+
+        public const string CONFIG_PROP_PROVIDER = "provider";
         public const string CORE_CACHE_SECTION = "coreCaching";
 
     	public const string CONFIG_PROP_DEFAULTPROVIDER = "defaultProvider";

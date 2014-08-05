@@ -80,7 +80,30 @@ namespace Civic.Core.Caching.Configuration
                 if (_providers == null || _providers.Count == 0) _providers = null;
                 return _providers ?? (_providers = new NamedElementCollection<CacheProviderElement>
                     {
-                        new CacheProviderElement(new WebCacheProvider()) {Name = "WebCacheProvider"}
+                       new CacheProviderElement(new WebCacheProvider()) {Name = "WebCacheProvider"},
+                       new CacheProviderElement(new SqlCacheProvider
+                           {
+                               Configuration =
+                                   new CacheProviderElement
+                                       {
+                                           Attributes = new Dictionary<string, string> {{"connectionStringName", "CIVIC"}}
+                                       }
+                           })
+                           {
+                               Name = "SqlCacheProvider"
+                           },
+                       new CacheProviderElement(new MultiCacheProvider
+                           {
+                               Configuration =
+                                   new CacheProviderElement
+                                       {
+                                           Attributes = new Dictionary<string, string> {{"providers", "SqlCacheProvider,WebCacheProvider"}}
+                                       }
+                           })
+                           {
+                               Name = "TokenCacheProvider"
+                           },
+                       new CacheProviderElement(new NoCacheProvider()) {Name = "NoCacheProvider"}
                     });
             }
         }
