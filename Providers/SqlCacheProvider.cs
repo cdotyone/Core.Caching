@@ -75,87 +75,89 @@ namespace Civic.Core.Caching.Providers
 
         private void saveCachetoDB(string scope, string cacheKey, string value, TimeSpan decay)
         {
-            var database = new SqlConnection(ConnectionString);
-            database.Open();
-
-            using (var command = database.CreateCommand())
+            using (var database = new SqlConnection(ConnectionString))
             {
-                command.CommandType = CommandType.StoredProcedure;
-
-                var param = command.CreateParameter();
-                param.Direction = ParameterDirection.Input;
-                param.ParameterName = "@scope";
-                param.Value = scope;
-                param.DbType = DbType.String;
-                command.Parameters.Add(param);
-
-                param = command.CreateParameter();
-                param.Direction = ParameterDirection.Input;
-                param.ParameterName = "@cacheKey";
-                param.Value = cacheKey;
-                param.DbType = DbType.String;
-                command.Parameters.Add(param);
-
-                if (string.IsNullOrEmpty(value))
+                using (var command = database.CreateCommand())
                 {
-                    command.CommandText = "[civic].[usp_SystemCacheRemove]";
-                }
-                else
-                {
-                    command.CommandText = "[civic].[usp_SystemCacheSave]";
+                    command.CommandType = CommandType.StoredProcedure;
 
-                    param = command.CreateParameter();
+                    var param = command.CreateParameter();
                     param.Direction = ParameterDirection.Input;
-                    param.ParameterName = "@value";
-                    param.Value = value;
+                    param.ParameterName = "@scope";
+                    param.Value = scope;
                     param.DbType = DbType.String;
                     command.Parameters.Add(param);
 
                     param = command.CreateParameter();
                     param.Direction = ParameterDirection.Input;
-                    param.ParameterName = "@timeExpire";
-                    param.Value = DateTime.UtcNow.Add(decay);
-                    param.DbType = DbType.DateTime;
-                    command.Parameters.Add(param);                    
-                }
+                    param.ParameterName = "@cacheKey";
+                    param.Value = cacheKey;
+                    param.DbType = DbType.String;
+                    command.Parameters.Add(param);
 
-                command.ExecuteNonQuery();
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        command.CommandText = "[civic].[usp_SystemCacheRemove]";
+                    }
+                    else
+                    {
+                        command.CommandText = "[civic].[usp_SystemCacheSave]";
+
+                        param = command.CreateParameter();
+                        param.Direction = ParameterDirection.Input;
+                        param.ParameterName = "@value";
+                        param.Value = value;
+                        param.DbType = DbType.String;
+                        command.Parameters.Add(param);
+
+                        param = command.CreateParameter();
+                        param.Direction = ParameterDirection.Input;
+                        param.ParameterName = "@timeExpire";
+                        param.Value = DateTime.UtcNow.Add(decay);
+                        param.DbType = DbType.DateTime;
+                        command.Parameters.Add(param);
+                    }
+
+                    database.Open();
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
         private string readCachefromDB(string scope, string cacheKey)
         {
-            var database = new SqlConnection(ConnectionString);
-            database.Open();
-
-            using (var command = database.CreateCommand())
+            using (var database = new SqlConnection(ConnectionString))
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = "[civic].[usp_SystemCacheGet]";
-
-                var param = command.CreateParameter();
-                param.Direction = ParameterDirection.Input;
-                param.ParameterName = "@scope";
-                param.Value = scope;
-                param.DbType = DbType.String;
-                command.Parameters.Add(param);
-
-                param = command.CreateParameter();
-                param.Direction = ParameterDirection.Input;
-                param.ParameterName = "@cacheKey";
-                param.Value = cacheKey;
-                param.DbType = DbType.String;
-                command.Parameters.Add(param);
-
-                using (IDataReader dataReader = command.ExecuteReader())
+                using (var command = database.CreateCommand())
                 {
-                    while (dataReader.Read())
-                    {
-                        return dataReader["Value"].ToString();
-                    }
-                }
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = "[civic].[usp_SystemCacheGet]";
 
-                return null;
+                    var param = command.CreateParameter();
+                    param.Direction = ParameterDirection.Input;
+                    param.ParameterName = "@scope";
+                    param.Value = scope;
+                    param.DbType = DbType.String;
+                    command.Parameters.Add(param);
+
+                    param = command.CreateParameter();
+                    param.Direction = ParameterDirection.Input;
+                    param.ParameterName = "@cacheKey";
+                    param.Value = cacheKey;
+                    param.DbType = DbType.String;
+                    command.Parameters.Add(param);
+
+                    database.Open();
+                    using (IDataReader dataReader = command.ExecuteReader())
+                    {
+                        while (dataReader.Read())
+                        {
+                            return dataReader["Value"].ToString();
+                        }
+                    }
+
+                    return null;
+                }
             }
         }
     }
