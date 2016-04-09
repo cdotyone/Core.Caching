@@ -25,6 +25,8 @@ namespace Civic.Core.Caching.Configuration
 		{
 			get
 			{
+                if (_current != null) return _current;
+
                 if (_coreConfig == null) _coreConfig = CivicSection.Current;
                 _current = new CacheConfig(_coreConfig.Children.ContainsKey(SectionName) ? _coreConfig.Children[SectionName] : null);
                 return _current;

@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using Civic.Core.Caching.Providers;
+﻿using Civic.Core.Caching.Providers;
 using Civic.Core.Configuration;
 
 namespace Civic.Core.Caching.Configuration
@@ -13,15 +12,10 @@ namespace Civic.Core.Caching.Configuration
 		/// 
 		/// In the form: assembly="Civic.Core.Configuration, Version=1.0.0.0, Culture=neutral"
 		/// </summary>
-		[ConfigurationProperty(Constants.ASSEMBLY, IsRequired = true)]
 		public string Assembly
 		{
-			get
-			{
-				if (string.IsNullOrEmpty(_assembly)) _assembly = Attributes[Constants.ASSEMBLY];
-				return _assembly;
-			}
-			set { _assembly = value; }
+            get { return _assembly; }
+            set { _assembly = value; Attributes[Constants.ASSEMBLY] = value; }
 		}
 		private string _assembly;
 
@@ -30,15 +24,10 @@ namespace Civic.Core.Caching.Configuration
 		/// 
 		/// In the form of type="Civic.Core.Caching.Providers.WebCacheProvider"
 		/// </summary>
-		[ConfigurationProperty(Constants.TYPE, IsRequired = true)]
 		public string Type
 		{
-			get
-			{
-				if (string.IsNullOrEmpty(_typeName)) _typeName = Attributes[Constants.TYPE];
-				return _typeName;
-			}
-			set { _typeName = value; }
+			get { return _typeName; }
+			set { _typeName = value; Attributes[Constants.TYPE] = value; }
 		}
 		private string _typeName;
 
@@ -64,6 +53,9 @@ namespace Civic.Core.Caching.Configuration
 		{
 		    Attributes = config.Attributes;
 		    Children = config.Children;
+
+            _assembly = Attributes[Constants.ASSEMBLY];
+            _typeName = Attributes[Constants.TYPE];
         }
 
         /// <summary>
@@ -74,6 +66,8 @@ namespace Civic.Core.Caching.Configuration
         {
             _provider = provider;
             if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
+            _assembly = provider.GetType().Assembly.FullName;
+            _typeName = provider.GetType().FullName;
         }
 
         /// <summary>
@@ -85,6 +79,8 @@ namespace Civic.Core.Caching.Configuration
 		{
 			_provider = provider;
             if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
-		}
+            _assembly = provider.GetType().Assembly.FullName;
+            _typeName = provider.GetType().FullName;
+        }
 	}
 }
