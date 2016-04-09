@@ -66,8 +66,8 @@ namespace Civic.Core.Caching.Configuration
         {
             _provider = provider;
             if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
-            _assembly = provider.GetType().Assembly.FullName;
-            _typeName = provider.GetType().FullName;
+            Assembly = provider.GetType().Assembly.FullName;
+            Type = provider.GetType().FullName;
         }
 
         /// <summary>
