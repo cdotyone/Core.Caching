@@ -1,12 +1,11 @@
 ﻿using System.Configuration;
 using Civic.Core.Caching.Providers;
 using Civic.Core.Configuration;
-using Civic.Core.Configuration.Providers;
 
 namespace Civic.Core.Caching.Configuration
 {
 	public class CacheProviderElement : NamedConfigurationElement
-	{
+    {
 	    private ICacheProvider _provider;
 
 		/// <summary>
@@ -15,11 +14,11 @@ namespace Civic.Core.Caching.Configuration
 		/// In the form: assembly="Civic.Core.Configuration, Version=1.0.0.0, Culture=neutral"
 		/// </summary>
 		[ConfigurationProperty(Constants.ASSEMBLY, IsRequired = true)]
-		public string AssemblyName
+		public string Assembly
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(_assembly)) _assembly = (string) this[Constants.ASSEMBLY];
+				if (string.IsNullOrEmpty(_assembly)) _assembly = Attributes[Constants.ASSEMBLY];
 				return _assembly;
 			}
 			set { _assembly = value; }
@@ -32,11 +31,11 @@ namespace Civic.Core.Caching.Configuration
 		/// In the form of type="Civic.Core.Caching.Providers.WebCacheProvider"
 		/// </summary>
 		[ConfigurationProperty(Constants.TYPE, IsRequired = true)]
-		public string TypeName
+		public string Type
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(_typeName)) _typeName = (string)this[Constants.TYPE];
+				if (string.IsNullOrEmpty(_typeName)) _typeName = Attributes[Constants.TYPE];
 				return _typeName;
 			}
 			set { _typeName = value; }
@@ -51,7 +50,7 @@ namespace Civic.Core.Caching.Configuration
 			get {
                 if(_provider!=null) return _provider;
 
-			    _provider = (ICacheProvider) DynamicInstance.CreateInstance(AssemblyName, TypeName);
+			    _provider = (ICacheProvider) DynamicInstance.CreateInstance(Assembly, Type);
 			    _provider.Configuration = this;
 
                 return _provider;
@@ -61,24 +60,31 @@ namespace Civic.Core.Caching.Configuration
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public CacheProviderElement()
+		public CacheProviderElement(INamedElement config)
 		{
-		}
+		    Attributes = config.Attributes;
+		    Children = config.Children;
+        }
 
-		/// <summary>
-		/// Creates a CacheProviderElement from a ICacheProvider
-		/// </summary>
-		/// <param name="provider">the provider to create the configuration entry from</param>
+        /// <summary>
+        /// Creates a CacheProviderElement from a ICacheProvider
+        /// </summary>
+        /// <param name="provider">the provider to create the configuration entry from</param>
         public CacheProviderElement(ICacheProvider provider)
+        {
+            _provider = provider;
+            if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
+        }
+
+        /// <summary>
+        /// Creates a CacheProviderElement from a ICacheProvider
+        /// </summary>
+        /// <param name="provider">the provider to create the configuration entry from</param>
+        /// <param name="config">the configuration for the provider</param>
+        public CacheProviderElement(ICacheProvider provider, INamedElement config) : this(config)
 		{
 			_provider = provider;
-
-			var typeConfigFile = typeof(ConfigFileProvider);
-			Name = typeConfigFile.Name;
-			AssemblyName = typeConfigFile.Assembly.FullName;
-			TypeName = typeConfigFile.FullName;
-
-			if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
+            if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
 		}
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using Civic.Core.Caching.Configuration;
 using Civic.Core.Configuration;
 
 namespace Civic.Core.Caching.Providers
@@ -9,7 +8,7 @@ namespace Civic.Core.Caching.Providers
         /// <summary>
         /// The configuration for this provider
         /// </summary>
-        CacheProviderElement Configuration { get; set; }
+        INamedElement Configuration { get; set; }
 
         TV ReadCache<TV>( string scope, string key) where TV : class;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Civic.Core.Caching.Configuration;
+using Civic.Core.Configuration;
 
 namespace Civic.Core.Caching.Providers
 {
@@ -11,7 +11,7 @@ namespace Civic.Core.Caching.Providers
         /// <summary>
         /// The configuration for this provider
         /// </summary>
-        public CacheProviderElement Configuration { get; set; }
+        public INamedElement Configuration { get; set; }
 
 	    public string[] Providers
 	    {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Caching;
 using Civic.Core.Caching.Configuration;
+using Civic.Core.Configuration;
 
 namespace Civic.Core.Caching.Providers
 {
@@ -13,7 +14,7 @@ namespace Civic.Core.Caching.Providers
         /// <summary>
         /// The configuration for this provider
         /// </summary>
-        public CacheProviderElement Configuration { get; set; }
+        public INamedElement Configuration { get; set; }
 
         public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
 		{

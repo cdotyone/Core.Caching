@@ -107,7 +107,7 @@
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="CacheManager.cs" />
-    <Compile Include="Configuration\CacheConfigurationSection.cs" />
+    <Compile Include="Configuration\CacheConfig.cs" />
     <Compile Include="Configuration\CacheProviderElement.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

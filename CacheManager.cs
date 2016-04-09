@@ -13,35 +13,15 @@ namespace Civic.Core.Caching
     {
         #region Fields
 
-        public static CacheConfigurationSection Configuration
-        {
-            get
-            {
-                if (_configuration == null)
-                {
-                    Configuration = CacheConfigurationSection.Current;
-                }
-                return _configuration;
-            }
-            set
-            {
-                lock (InternalSyncObject)
-                {
-                    _configuration = value;
-                }
-            }
-        }
-
-        private static CacheConfigurationSection _configuration;
-
         public static ICacheProvider Current
 		{
 			get
 			{
 				if( _current==null )
 				{
-					var config = CacheConfigurationSection.Current;
-					Current = DynamicInstance.CreateInstance<ICacheProvider>(config.Assembly, config.Type);
+					var config = CacheConfig.Current;
+				    var currentConfig = config.Providers[config.DefaultProvider.ToLowerInvariant()];
+                    Current = DynamicInstance.CreateInstance<ICacheProvider>(currentConfig.Assembly, currentConfig.Type);
 				}
 
 				if (_current == null) Current = new NoCacheProvider();
@@ -158,7 +138,7 @@ namespace Civic.Core.Caching
             try
             {
                 ICacheProvider cache = Current;
-                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfig.Current.Providers[provider.ToLowerInvariant()].Provider;
                 
                 cache.WriteCache(scope, key, value, TimeSpan.FromMinutes(60));
             }
@@ -173,7 +153,7 @@ namespace Civic.Core.Caching
             try
             {
                 ICacheProvider cache = Current;
-                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfig.Current.Providers[provider.ToLowerInvariant()].Provider;
 
                 cache.WriteCache(scope, key, value, decay);
             }
@@ -192,7 +172,7 @@ namespace Civic.Core.Caching
 			try
 			{
 			    ICacheProvider cache = Current;
-                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfig.Current.Providers[provider.ToLowerInvariant()].Provider;
 
                 var value = cache.ReadCache<TV>(scope, key);
                 if (value == null)
@@ -213,7 +193,7 @@ namespace Civic.Core.Caching
 			try
 			{
                 ICacheProvider cache = Current;
-                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfig.Current.Providers[provider.ToLowerInvariant()].Provider;
 
                 var value = cache.ReadCache<TV>(scope, key);
                 if (value == null)
@@ -239,7 +219,7 @@ namespace Civic.Core.Caching
             try
             {
                 ICacheProvider cache = Current;
-                if (!string.IsNullOrEmpty(provider)) cache = CacheConfigurationSection.Current.Providers.Get(provider).Provider;
+                if (!string.IsNullOrEmpty(provider)) cache = CacheConfig.Current.Providers[provider.ToLowerInvariant()].Provider;
                 cache.RemoveAllByScope(scope);
             }
             catch (Exception ex)
