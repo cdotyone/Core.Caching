@@ -75,10 +75,14 @@ namespace Civic.Core.Caching.Configuration
         /// </summary>
         /// <param name="provider">the provider to create the configuration entry from</param>
         /// <param name="config">the configuration for the provider</param>
-        public CacheProviderElement(ICacheProvider provider, INamedElement config) : this(config)
+        public CacheProviderElement(ICacheProvider provider, INamedElement config)
 		{
-			_provider = provider;
+            Attributes = config.Attributes;
+            Children = config.Children;
+
+            _provider = provider;
             if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
+
             _assembly = provider.GetType().Assembly.FullName;
             _typeName = provider.GetType().FullName;
         }
