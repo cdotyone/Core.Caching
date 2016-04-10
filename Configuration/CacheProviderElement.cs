@@ -7,29 +7,39 @@ namespace Civic.Core.Caching.Configuration
     {
 	    private ICacheProvider _provider;
 
-		/// <summary>
-		/// The "assembly" name given of the provider.
-		/// 
-		/// In the form: assembly="Civic.Core.Configuration, Version=1.0.0.0, Culture=neutral"
-		/// </summary>
-		public string Assembly
-		{
-            get { return _assembly; }
-            set { _assembly = value; Attributes[Constants.ASSEMBLY] = value; }
-		}
-		private string _assembly;
+	    /// <summary>
+	    /// The "assembly" name given of the provider.
+	    /// 
+	    /// In the form: assembly="Civic.Core.Configuration, Version=1.0.0.0, Culture=neutral"
+	    /// </summary>
+	    public string Assembly
+	    {
+	        get { return _assembly; }
+	        set
+	        {
+	            _assembly = value;
+	            Attributes[Constants.ASSEMBLY] = value;
+	        }
+	    }
 
-		/// <summary>
-		/// The "type" name of the provider.
-		/// 
-		/// In the form of type="Civic.Core.Caching.Providers.WebCacheProvider"
-		/// </summary>
-		public string Type
-		{
-			get { return _typeName; }
-			set { _typeName = value; Attributes[Constants.TYPE] = value; }
-		}
-		private string _typeName;
+	    private string _assembly;
+
+	    /// <summary>
+	    /// The "type" name of the provider.
+	    /// 
+	    /// In the form of type="Civic.Core.Caching.Providers.WebCacheProvider"
+	    /// </summary>
+	    public string Type
+	    {
+	        get { return _typeName; }
+	        set
+	        {
+	            _typeName = value;
+	            Attributes[Constants.TYPE] = value;
+	        }
+	    }
+
+	    private string _typeName;
 
 		/// <summary>
 		/// Trys to dynamically create the provider and then returns the provider.
@@ -83,8 +93,8 @@ namespace Civic.Core.Caching.Configuration
             _provider = provider;
             if (Name.EndsWith("Provider")) Name = Name.Substring(0, Name.Length - 8);
 
-            _assembly = provider.GetType().Assembly.FullName;
-            _typeName = provider.GetType().FullName;
+            Assembly = provider.GetType().Assembly.FullName;
+            Type = provider.GetType().FullName;
         }
 	}
 }
