@@ -62,7 +62,7 @@ namespace Civic.Core.Caching.Configuration
                                 Attributes = new Dictionary<string, string> {{"connectionStringName", "CIVIC"}}
                             }));
                     Children.Add("TokenCacheProvider",
-                        new CacheProviderElement(new SqlCacheProvider(),
+                        new CacheProviderElement(new MultiCacheProvider(),
                             new NamedConfigurationElement()
                             {
                                 Attributes = new Dictionary<string, string> { { "providers", "SqlCacheProvider,WebCacheProvider" } }

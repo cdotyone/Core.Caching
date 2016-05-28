@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Civic.Core.Configuration;
 
 namespace Civic.Core.Caching.Providers
@@ -59,7 +60,7 @@ namespace Civic.Core.Caching.Providers
 	    {
             var failedToFind = new List<string>();
 
-            foreach (var provider in Providers)
+            foreach (var provider in Providers.ToArray().Reverse())
 	        {
                 try
                 {
