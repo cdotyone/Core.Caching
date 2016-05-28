@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Caching;
-using Civic.Core.Caching.Configuration;
 using Civic.Core.Configuration;
 
 namespace Civic.Core.Caching.Providers
 {
 	public class WebCacheProvider : ICacheProvider
 	{
-        private static Dictionary<string,List<string>> _scopeMap = new Dictionary<string, List<string>>();
+        private static readonly ConcurrentDictionary<string,List<string>> _scopeMap = new ConcurrentDictionary<string, List<string>>();
 
         /// <summary>
         /// The configuration for this provider
@@ -24,7 +24,7 @@ namespace Civic.Core.Caching.Providers
 			try
 			{
                 key = scope + "|" + key;
-                addToScopeMap(scope, key);
+                AddToScopeMap(scope, key);
 
 				var cache = HttpRuntime.Cache;
 				if (cache != null)
@@ -33,8 +33,12 @@ namespace Civic.Core.Caching.Providers
 					if (typeof(TV).IsValueType) cache[key] = value;
 					else
 					{
-						if (value == null) cache.Remove(key);
-						else cache.Add(key, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null); 
+					    if (value == null) cache.Remove(key);
+					    else
+					    {
+                            if(cache.Get(key)!=null) cache.Remove(key);
+                            cache.Add(key, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+					    } 
 					}
 				}
 			}
@@ -44,21 +48,15 @@ namespace Civic.Core.Caching.Providers
 			}
 		}
 
-	    private static void addToScopeMap(string scope, string key)
+	    private static void AddToScopeMap(string scope, string key)
 	    {
 	        if (!_scopeMap.ContainsKey(scope))
 	        {
-	            lock (_scopeMap)
-	            {
-	                _scopeMap[scope] = new List<string>();
-	            }
+                _scopeMap[scope] = new List<string>();
 
 	            if (!_scopeMap[scope].Contains(key))
 	            {
-	                lock (_scopeMap[scope])
-	                {
-	                    _scopeMap[scope].Add(key);
-	                }
+                    _scopeMap[scope].Add(key);
 	            }
 	        }
 	    }
@@ -74,10 +72,7 @@ namespace Civic.Core.Caching.Providers
                     {
                         cache.Remove(key);
                     }
-                    lock (_scopeMap[scope])
-                    {
-                        _scopeMap[scope].Clear();
-                    }
+                    _scopeMap[scope].Clear();
                 }
 	        }
 	    }
@@ -91,7 +86,7 @@ namespace Civic.Core.Caching.Providers
             if (cache != null)
             {
                 key = scope + "|" + key;
-                addToScopeMap(scope, key);
+                AddToScopeMap(scope, key);
 
                 try
                 {
