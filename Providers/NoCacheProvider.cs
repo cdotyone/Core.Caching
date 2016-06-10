@@ -12,12 +12,12 @@ namespace Civic.Core.Caching.Providers
 
 		#region Methods
 
-        public TV ReadCache<TV>(string scope, string key) where TV : class 
+        public TV ReadCache<TV>(string scope, string cacheKey) where TV : class 
 	    {
 	        return null;
 	    }
 
-        public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
+        public void WriteCache<TV>(string scope, string cacheKey, TV value, TimeSpan decay) where TV : class 
 		{
 		}
 

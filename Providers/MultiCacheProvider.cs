@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Civic.Core.Configuration;
+using Civic.Core.Logging;
 
 namespace Civic.Core.Caching.Providers
 {
@@ -21,23 +22,31 @@ namespace Civic.Core.Caching.Providers
 	            if (_providers != null) return _providers;
 
 	            if (Configuration.Attributes.ContainsKey(Constants.CONFIG_PROP_PROVIDERS))
-	                _providers = Configuration.Attributes[Constants.CONFIG_PROP_PROVIDERS].Split(',');
-                else throw new Exception("No providers configured for MultiCacheProvider");
+	            {
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "MultiCacheProvider - Providers - {0}", Configuration.Attributes[Constants.CONFIG_PROP_PROVIDERS]);
+
+                    _providers = Configuration.Attributes[Constants.CONFIG_PROP_PROVIDERS].Split(',');
+	            }
+	            else throw new Exception("No providers configured for MultiCacheProvider");
 
 	            return _providers;
 	        }
 	    }
 
-        public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
+        public void WriteCache<TV>(string scope, string cacheKey, TV value, TimeSpan decay) where TV : class 
 		{
             foreach (var provider in Providers)
             {
                 try
                 {
-                    CacheManager.WriteProviderCache(provider, scope, key, value, decay);
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "MultiCacheProvider - Writing {0} Scope {1} Key {2}", provider, scope, cacheKey);
+
+                    CacheManager.WriteProviderCache(provider, scope, cacheKey, value, decay);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "MultiCacheProvider - Exception From {0} Scope {1} Key {2}", provider, scope, cacheKey);
+                    Logger.HandleException(LoggingBoundaries.DataLayer, ex);
                 }
             }
 		}
@@ -48,15 +57,19 @@ namespace Civic.Core.Caching.Providers
             {
                 try
                 {
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "MultiCacheProvider - RemoveAllByScope {0} Scope {1}", provider, scope);
+
                     CacheManager.RemoveAllProvider(provider, scope);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "MultiCacheProvider - Exception From {0} Scope {1} Key {2}", provider, scope);
+                    Logger.HandleException(LoggingBoundaries.DataLayer, ex);
                 }
             }
-	    }
+        }
 
-	    public TV ReadCache<TV>(string scope, string key) where TV : class
+	    public TV ReadCache<TV>(string scope, string cacheKey) where TV : class
 	    {
             var failedToFind = new List<string>();
 
@@ -64,21 +77,31 @@ namespace Civic.Core.Caching.Providers
 	        {
                 try
                 {
-                    var val = CacheManager.ReadProviderCache<TV>(provider, scope, key, null);
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "MultiCacheProvider - Reading From {0} Scope {1} Key {2}", provider, scope, cacheKey);
+
+                    var val = CacheManager.ReadProviderCache<TV>(provider, scope, cacheKey, null);
                     if (val == null)
                     {
+                        Logger.LogTrace(LoggingBoundaries.DataLayer,
+                            "MultiCacheProvider - Not Found From {0} Scope {1} Key {2}", provider, scope, cacheKey);
                         failedToFind.Add(provider);
                     }
-
-                    foreach (var saveProvider in failedToFind)
+                    else
                     {
-                        CacheManager.WriteProviderCache(saveProvider, scope, key, val);
-                    }
+                        foreach (var saveProvider in failedToFind)
+                        {
+                            Logger.LogTrace(LoggingBoundaries.DataLayer,
+                                "MultiCacheProvider - Updating {0} Scope {1} Key {2}", provider, scope, cacheKey);
+                            CacheManager.WriteProviderCache(saveProvider, scope, cacheKey, val);
+                        }
 
-                    return val;
+                        return val;
+                    }
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "MultiCacheProvider - Exception From {0} Scope {1} Key {2}", provider, scope, cacheKey);
+                    Logger.HandleException(LoggingBoundaries.DataLayer, ex);
                 }
 	        }
 

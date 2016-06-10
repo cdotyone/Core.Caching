@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using Civic.Core.Configuration;
+using Civic.Core.Logging;
 using Newtonsoft.Json;
 
 namespace Civic.Core.Caching.Providers
@@ -14,13 +15,13 @@ namespace Civic.Core.Caching.Providers
         /// </summary>
         public INamedElement Configuration { get; set; }
 
-        public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
+        public void WriteCache<TV>(string scope, string cacheKey, TV value, TimeSpan decay) where TV : class 
         {
             try
             {
                 if (value == null)
                 {
-                    saveCachetoDB(scope, key, null, TimeSpan.MinValue);
+                    saveCachetoDB(scope, cacheKey, null, TimeSpan.MinValue);
                 }
                 else
                 {
@@ -28,13 +29,13 @@ namespace Civic.Core.Caching.Providers
                     {
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
-                    saveCachetoDB(scope, key, output, decay);
+                    saveCachetoDB(scope, cacheKey, output, decay);
                 }
             }
             catch (Exception ex)
             {
                 throw new ArgumentException(
-                    string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key,
+                    string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", cacheKey,
                         scope, ex.Message));
             }
         }
@@ -44,18 +45,18 @@ namespace Civic.Core.Caching.Providers
             saveCachetoDB(scope, null, null, TimeSpan.MinValue);
         }
 
-        public TV ReadCache<TV>(string scope, string key) where TV : class
+        public TV ReadCache<TV>(string scope, string cacheKey) where TV : class
         {
             try
             {
-                string value = readCachefromDB(scope, key);
+                string value = readCachefromDB(scope, cacheKey);
                 if (!string.IsNullOrEmpty(value)) 
                     return JsonConvert.DeserializeObject<TV>(value);
             }
             catch (Exception ex)
             {
                 throw new ArgumentException(
-                    string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key,
+                    string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", cacheKey,
                         scope, ex.Message));
             }
             return null;
@@ -97,10 +98,13 @@ namespace Civic.Core.Caching.Providers
 
                     if (string.IsNullOrEmpty(value))
                     {
+                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Scope {1} Key {2} - Value Null - Remove", scope, cacheKey);
                         command.CommandText = "[civic].[usp_SystemCacheRemove]";
                     }
                     else
                     {
+                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Scope {1} Key {2} - Save - {3}", scope, cacheKey, value);
+
                         command.CommandText = "[civic].[usp_SystemCacheSave]";
 
                         param = command.CreateParameter();
@@ -113,7 +117,7 @@ namespace Civic.Core.Caching.Providers
                         param = command.CreateParameter();
                         param.Direction = ParameterDirection.Input;
                         param.ParameterName = "@timeExpire";
-                        param.Value = DateTime.UtcNow.Add(decay);
+                        param.Value = DateTime.Now.Add(decay);
                         param.DbType = DbType.DateTime;
                         command.Parameters.Add(param);
                     }
@@ -130,6 +134,9 @@ namespace Civic.Core.Caching.Providers
             {
                 using (var command = database.CreateCommand())
                 {
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read Scope {1} Key {2} - Save", scope, cacheKey);
+
+
                     command.CommandType = CommandType.StoredProcedure;
                     command.CommandText = "[civic].[usp_SystemCacheGet]";
 
@@ -152,8 +159,11 @@ namespace Civic.Core.Caching.Providers
                     {
                         while (dataReader.Read())
                         {
+                            Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read Scope {1} Key {2} - Found", scope, cacheKey);
                             return dataReader["Value"].ToString();
                         }
+
+                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read Scope {1} Key {2} - Not Found", scope, cacheKey);
                     }
 
                     return null;

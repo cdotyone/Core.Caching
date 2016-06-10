@@ -10,9 +10,9 @@ namespace Civic.Core.Caching.Providers
         /// </summary>
         INamedElement Configuration { get; set; }
 
-        TV ReadCache<TV>( string scope, string key) where TV : class;
+        TV ReadCache<TV>( string scope, string cacheKey) where TV : class;
 
-        void WriteCache<TV>( string scope, string key, TV value, TimeSpan decay) where TV : class;
+        void WriteCache<TV>( string scope, string cacheKey, TV value, TimeSpan decay) where TV : class;
 
 	    void RemoveAllByScope(string scope);
 	}

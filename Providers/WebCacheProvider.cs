@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Caching;
 using Civic.Core.Configuration;
+using Civic.Core.Logging;
 
 namespace Civic.Core.Caching.Providers
 {
@@ -16,47 +17,54 @@ namespace Civic.Core.Caching.Providers
         /// </summary>
         public INamedElement Configuration { get; set; }
 
-        public void WriteCache<TV>(string scope, string key, TV value, TimeSpan decay) where TV : class 
+        public void WriteCache<TV>(string scope, string cacheKey, TV value, TimeSpan decay) where TV : class 
 		{
-			if (key == null)
+			if (cacheKey == null)
 				throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_WRITE_CACHE_KEY_NULL));
 
 			try
 			{
-                key = scope + "|" + key;
-                AddToScopeMap(scope, key);
+                cacheKey = scope + "|" + cacheKey;
+
+                Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Write", scope, cacheKey);
+
+                AddToScopeMap(scope, cacheKey);
 
 				var cache = HttpRuntime.Cache;
 				if (cache != null)
 				{
 					// ReSharper disable CompareNonConstrainedGenericWithNull
-					if (typeof(TV).IsValueType) cache[key] = value;
+					if (typeof(TV).IsValueType) cache[cacheKey] = value;
 					else
 					{
-					    if (value == null) cache.Remove(key);
+					    if (value == null)
+					    {
+                            Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Value Null - Remove", scope, cacheKey);
+                            cache.Remove(cacheKey);
+					    }
 					    else
 					    {
-                            if(cache.Get(key)!=null) cache.Remove(key);
-                            cache.Add(key, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                            if(cache.Get(cacheKey)!=null) cache.Remove(cacheKey);
+                            cache.Add(cacheKey, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
 					    } 
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-                throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, scope, ex.Message));
+                throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", cacheKey, scope, ex.Message));
 			}
 		}
 
-	    private static void AddToScopeMap(string scope, string key)
+	    private static void AddToScopeMap(string scope, string cacheKey)
 	    {
 	        if (!_scopeMap.ContainsKey(scope))
 	        {
                 _scopeMap[scope] = new List<string>();
 
-	            if (!_scopeMap[scope].Contains(key))
+	            if (!_scopeMap[scope].Contains(cacheKey))
 	            {
-                    _scopeMap[scope].Add(key);
+                    _scopeMap[scope].Add(cacheKey);
 	            }
 	        }
 	    }
@@ -77,24 +85,28 @@ namespace Civic.Core.Caching.Providers
 	        }
 	    }
 
-	    public TV ReadCache<TV>(string scope, string key) where TV : class
+	    public TV ReadCache<TV>(string scope, string cacheKey) where TV : class
 	    {
-            if (key == null)
+            if (cacheKey == null)
                 throw new NotSupportedException(SR.GetString(SR.CACHE_MANAGER_READ_CACHE_KEY_NULL));
 
             var cache = HttpRuntime.Cache;
             if (cache != null)
             {
-                key = scope + "|" + key;
-                AddToScopeMap(scope, key);
+                cacheKey = scope + "|" + cacheKey;
+                AddToScopeMap(scope, cacheKey);
+
+                Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Read", scope, cacheKey);
 
                 try
                 {
-                    return (cache[key] == null) ? null : (TV) cache[key];
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Read - ", scope, cacheKey, ((cache[cacheKey] == null) ? "Not Found" : "Found"));
+
+                    return (cache[cacheKey] == null) ? null : (TV) cache[cacheKey];
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", key, scope, ex.Message));
+                    throw new ArgumentException(string.Format("Error Accessing Cache Manager.\r\nKey:{0}\r\nCache Store:{1}\r\nError:{2}", cacheKey, scope, ex.Message));
                 }
             }
 

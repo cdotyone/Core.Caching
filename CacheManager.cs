@@ -175,7 +175,7 @@ namespace Civic.Core.Caching
                 if (!string.IsNullOrEmpty(provider)) cache = CacheConfig.Current.Providers[provider.ToLowerInvariant()].Provider;
 
                 var value = cache.ReadCache<TV>(scope, key);
-                if (value == null)
+                if (value == null && nullValue!=null)
                 {
                     cache.WriteCache(scope, key, nullValue, decay);
                     return nullValue;
@@ -199,7 +199,7 @@ namespace Civic.Core.Caching
                 if (value == null)
                 {
                     value = action();
-                    cache.WriteCache(scope, key, value, decay);
+                    if(value!=null) cache.WriteCache(scope, key, value, decay);
                     return value;
                 }
 			    return value;
