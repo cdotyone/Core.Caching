@@ -36,7 +36,7 @@ namespace Civic.Core.Caching.Configuration
         private static CacheConfig _current;
 
         /// <summary>
-        /// Gets or sets the typename for the skin for the header and footer
+        /// Gets or sets the name of the default cache provider
         /// </summary>
         public string DefaultProvider
         {
@@ -45,7 +45,7 @@ namespace Civic.Core.Caching.Configuration
         }
 
         /// <summary>
-        /// Gets the collection of custom link type element collections.
+        /// Gets the collection cache providers
         /// </summary>
         public Dictionary<string,CacheProviderElement> Providers
         {
