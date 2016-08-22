@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Civic.Core.Caching", "Civic.Core.Caching\Civic.Core.Caching.csproj", "{B8050087-2B82-4A11-AF63-12222991905F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Nuget|Any CPU = Nuget|Any CPU
+		Nuget|x64 = Nuget|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8050087-2B82-4A11-AF63-12222991905F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8050087-2B82-4A11-AF63-12222991905F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8050087-2B82-4A11-AF63-12222991905F}.Debug|x64.ActiveCfg = Debug|x64
+		{B8050087-2B82-4A11-AF63-12222991905F}.Debug|x64.Build.0 = Debug|x64
+		{B8050087-2B82-4A11-AF63-12222991905F}.Nuget|Any CPU.ActiveCfg = Nuget|Any CPU
+		{B8050087-2B82-4A11-AF63-12222991905F}.Nuget|Any CPU.Build.0 = Nuget|Any CPU
+		{B8050087-2B82-4A11-AF63-12222991905F}.Nuget|x64.ActiveCfg = Nuget|x64
+		{B8050087-2B82-4A11-AF63-12222991905F}.Nuget|x64.Build.0 = Nuget|x64
+		{B8050087-2B82-4A11-AF63-12222991905F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8050087-2B82-4A11-AF63-12222991905F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8050087-2B82-4A11-AF63-12222991905F}.Release|x64.ActiveCfg = Release|x64
+		{B8050087-2B82-4A11-AF63-12222991905F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
