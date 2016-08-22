@@ -5,6 +5,11 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Civic.Core.Caching", "Civic.Core.Caching\Civic.Core.Caching.csproj", "{B8050087-2B82-4A11-AF63-12222991905F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{D0BE756F-54B1-497D-9334-F3C9D07E6177}"
+	ProjectSection(SolutionItems) = preProject
+		Nuget\Civic.Core.Caching.nuspec = Nuget\Civic.Core.Caching.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
