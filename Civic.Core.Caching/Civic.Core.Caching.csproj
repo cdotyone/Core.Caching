@@ -49,7 +49,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\..\References\civic.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\References\civic.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -111,7 +111,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\References\VersionInfo.cs">
+    <Compile Include="..\References\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="CacheManager.cs" />
@@ -132,7 +132,7 @@
     <Compile Include="SR.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\References\civic.snk">
+    <None Include="..\References\civic.snk">
       <Link>civic.snk</Link>
     </None>
     <None Include="app.config" />
