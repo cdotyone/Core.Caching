@@ -99,13 +99,13 @@ namespace Civic.Core.Caching.Providers
                     if (string.IsNullOrEmpty(value))
                     {
                         Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Scope {1} Key {2} - Value Null - Remove", scope, cacheKey);
-                        command.CommandText = "[civic].[usp_SystemCacheRemove]";
+                        command.CommandText = "[civic].[usp_CacheRemove]";
                     }
                     else
                     {
                         Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Scope {1} Key {2} - Save - {3}", scope, cacheKey, value);
 
-                        command.CommandText = "[civic].[usp_SystemCacheSave]";
+                        command.CommandText = "[civic].[usp_CacheSave]";
 
                         param = command.CreateParameter();
                         param.Direction = ParameterDirection.Input;
@@ -138,7 +138,7 @@ namespace Civic.Core.Caching.Providers
 
 
                     command.CommandType = CommandType.StoredProcedure;
-                    command.CommandText = "[civic].[usp_SystemCacheGet]";
+                    command.CommandText = "[civic].[usp_CacheGet]";
 
                     var param = command.CreateParameter();
                     param.Direction = ParameterDirection.Input;
