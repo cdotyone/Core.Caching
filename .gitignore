@@ -113,6 +113,7 @@ dist
 app/bower_components
 .idea
 .nuget
+.vs
 Civic.Inspector/app
 Civic.Inspector.UI/.idea
 Civic.Inspector/uploads/*
