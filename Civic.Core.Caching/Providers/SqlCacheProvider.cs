@@ -19,7 +19,7 @@ namespace Civic.Core.Caching.Providers
         {
             try
             {
-                if (value == null)
+                if (value==null || (string.IsNullOrEmpty(value.ToString())))
                 {
                     saveCachetoDB(scope, cacheKey, null, TimeSpan.MinValue);
                 }
