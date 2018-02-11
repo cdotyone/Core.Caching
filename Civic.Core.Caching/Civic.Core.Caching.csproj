@@ -75,7 +75,7 @@
     <PackageReference Include="Civic.Core.Configuration">
       <Version>1.24.881</Version>
     </PackageReference>
-    <PackageReference Include="Civic.Core.Data" Version="1.24.883" />
+    <PackageReference Include="Civic.Core.Data" Version="1.24.888" />
     <PackageReference Include="Civic.Core.Logging">
       <Version>1.26.882</Version>
     </PackageReference>
