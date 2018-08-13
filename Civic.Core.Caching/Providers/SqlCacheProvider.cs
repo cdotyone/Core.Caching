@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using Civic.Core.Configuration;
+using Civic.Core.Data;
 using Civic.Core.Logging;
 using Newtonsoft.Json;
 
@@ -69,6 +70,7 @@ namespace Civic.Core.Caching.Providers
                 string connName = Configuration.Attributes.ContainsKey(Constants.CONFIG_PROP_CONNECTIONNAME) ? 
                                       Configuration.Attributes[Constants.CONFIG_PROP_CONNECTIONNAME] : 
                                       Constants.CONFIG_DEFAULT_CONNECTIONNAME;
+                connName = DataConfig.Current.GetConnectionName(connName);
                 var constring = ConfigurationManager.ConnectionStrings[connName].ConnectionString;
                 return constring;
             }
