@@ -161,6 +161,12 @@ namespace Civic.Core.Caching.Providers
                     {
                         while (dataReader.Read())
                         {
+                            var expire = DateTime.Parse(dataReader["TimeExpire"].ToString());
+                            if (expire < DateTime.UtcNow)
+                            {
+                                return null;
+                            }
+
                             Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read Scope {1} Key {2} - Found", scope, cacheKey);
                             return dataReader["Value"].ToString();
                         }
