@@ -164,6 +164,8 @@ namespace Civic.Core.Caching.Providers
                             var expire = DateTime.Parse(dataReader["TimeExpire"].ToString());
                             if (expire < DateTime.UtcNow)
                             {
+                                // clear it
+                                saveCachetoDB(scope, cacheKey, null, TimeSpan.Zero);
                                 return null;
                             }
 
