@@ -100,12 +100,12 @@ namespace Civic.Core.Caching.Providers
 
                     if (string.IsNullOrEmpty(value))
                     {
-                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Scope {0} Key {1} - Value Null - Remove", scope, cacheKey);
+                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Write - Scope {0} Key {1} - Value Null - Remove", scope, cacheKey);
                         command.CommandText = "[civic].[usp_CacheRemove]";
                     }
                     else
                     {
-                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Scope {0} Key {1} - Save - {2}", scope, cacheKey, value);
+                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Write - Scope {0} Key {1} - Save - {2}", scope, cacheKey, value);
 
                         command.CommandText = "[civic].[usp_CacheSave]";
 
@@ -125,7 +125,15 @@ namespace Civic.Core.Caching.Providers
                     }
 
                     database.Open();
-                    command.ExecuteNonQuery();
+
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch(Exception ex)
+                    {
+                        Logger.LogError(LoggingBoundaries.DataLayer, "SqlCacheProvider - Error Writing - Scope {0} Key {1} - {2}", scope, cacheKey, ex.Message);
+                    }
                 }
             }
         }
@@ -136,7 +144,7 @@ namespace Civic.Core.Caching.Providers
             {
                 using (var command = database.CreateCommand())
                 {
-                    Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read Scope {0} Key {1} - Save", scope, cacheKey);
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0} Key {1} - Save", scope, cacheKey);
 
 
                     command.CommandType = CommandType.StoredProcedure;
@@ -169,11 +177,11 @@ namespace Civic.Core.Caching.Providers
                                 return null;
                             }
 
-                            Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read Scope {0} Key {0} - Found", scope, cacheKey);
+                            Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0} Key {0} - Found", scope, cacheKey);
                             return dataReader["Value"].ToString();
                         }
 
-                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read Scope {0 Key {1} - Not Found", scope, cacheKey);
+                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0 Key {1} - Not Found", scope, cacheKey);
                     }
 
                     return null;
