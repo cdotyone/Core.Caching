@@ -124,15 +124,15 @@ namespace Civic.Core.Caching.Providers
                         command.Parameters.Add(param);
                     }
 
-                    database.Open();
-
                     try
                     {
+                        database.Open();
                         command.ExecuteNonQuery();
                     }
                     catch(Exception ex)
                     {
                         Logger.LogError(LoggingBoundaries.DataLayer, "SqlCacheProvider - Error Writing - Scope {0} Key {1} - {2}", scope, cacheKey, ex.Message);
+                        throw;
                     }
                 }
             }
@@ -144,7 +144,7 @@ namespace Civic.Core.Caching.Providers
             {
                 using (var command = database.CreateCommand())
                 {
-                    Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0} Key {1} - Save", scope, cacheKey);
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0} Key {1} - Before", scope, cacheKey);
 
 
                     command.CommandType = CommandType.StoredProcedure;
