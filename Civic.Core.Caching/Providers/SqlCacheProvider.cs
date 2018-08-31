@@ -181,7 +181,7 @@ namespace Civic.Core.Caching.Providers
                             return dataReader["Value"].ToString();
                         }
 
-                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0 Key {1} - Not Found", scope, cacheKey);
+                        Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0} Key {1} - Not Found", scope, cacheKey);
                     }
 
                     return null;

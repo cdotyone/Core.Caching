@@ -24,9 +24,9 @@ namespace Civic.Core.Caching.Providers
 
 			try
 			{
-                cacheKey = scope + "|" + cacheKey;
+                var fullCacheKey = scope + "|" + cacheKey;
 
-                Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Write", scope, cacheKey);
+                Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Write - Scope {0} Key {1} - Write", scope, cacheKey);
 
                 AddToScopeMap(scope, cacheKey);
 
@@ -39,13 +39,13 @@ namespace Civic.Core.Caching.Providers
 					{
 					    if (value == null)
 					    {
-                            Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Value Null - Remove", scope, cacheKey);
-                            cache.Remove(cacheKey);
+                            Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Write - Scope {0} Key {1} - Value Null - Remove", scope, cacheKey);
+                            cache.Remove(fullCacheKey);
 					    }
 					    else
 					    {
-                            if(cache.Get(cacheKey)!=null) cache.Remove(cacheKey);
-                            cache.Add(cacheKey, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+                            if(cache.Get(fullCacheKey) !=null) cache.Remove(fullCacheKey);
+                            cache.Add(fullCacheKey, value, null, DateTime.Now.Add(decay), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
 					    } 
 					}
 				}
@@ -93,16 +93,16 @@ namespace Civic.Core.Caching.Providers
             var cache = HttpRuntime.Cache;
             if (cache != null)
             {
-                cacheKey = scope + "|" + cacheKey;
+                var fullCacheKey = scope + "|" + cacheKey;
                 AddToScopeMap(scope, cacheKey);
 
-                Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Read", scope, cacheKey);
+                Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Read - Scope {0} Key {1} - Read", scope, cacheKey);
 
                 try
                 {
-                    Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Scope {1} Key {2} - Read - ", scope, cacheKey, ((cache[cacheKey] == null) ? "Not Found" : "Found"));
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Read - Scope {0} Key {1} - Read - ", scope, cacheKey, ((cache[cacheKey] == null) ? "Not Found" : "Found"));
 
-                    return (cache[cacheKey] == null) ? null : (TV) cache[cacheKey];
+                    return (cache[fullCacheKey] == null) ? null : (TV) cache[fullCacheKey];
                 }
                 catch (Exception ex)
                 {
