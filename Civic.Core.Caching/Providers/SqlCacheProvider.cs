@@ -119,7 +119,7 @@ namespace Civic.Core.Caching.Providers
                         param = command.CreateParameter();
                         param.Direction = ParameterDirection.Input;
                         param.ParameterName = "@timeExpire";
-                        param.Value = DateTime.Now.Add(decay);
+                        param.Value = DateTime.UtcNow.Add(decay);
                         param.DbType = DbType.DateTime;
                         command.Parameters.Add(param);
                     }
@@ -173,6 +173,7 @@ namespace Civic.Core.Caching.Providers
                             if (expire < DateTime.UtcNow)
                             {
                                 // clear it
+                                Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Read - Scope {0} Key {0} - Expired", scope, cacheKey);
                                 saveCachetoDB(scope, cacheKey, null, TimeSpan.Zero);
                                 return null;
                             }

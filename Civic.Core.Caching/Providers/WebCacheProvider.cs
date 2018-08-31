@@ -96,11 +96,9 @@ namespace Civic.Core.Caching.Providers
                 var fullCacheKey = scope + "|" + cacheKey;
                 AddToScopeMap(scope, cacheKey);
 
-                Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Read - Scope {0} Key {1} - Read", scope, cacheKey);
-
                 try
                 {
-                    Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Read - Scope {0} Key {1} - Read - ", scope, cacheKey, ((cache[cacheKey] == null) ? "Not Found" : "Found"));
+                    Logger.LogTrace(LoggingBoundaries.DataLayer, "WebCacheProvider - Read - Scope {0} Key {1} - Read", scope, cacheKey, ((cache[cacheKey] == null) ? "Not Found" : "Found"));
 
                     return (cache[fullCacheKey] == null) ? null : (TV) cache[fullCacheKey];
                 }
