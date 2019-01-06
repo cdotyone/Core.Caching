@@ -83,18 +83,18 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Civic.Core.Configuration">
-      <Version>1.26.0</Version>
+      <Version>1.26.1</Version>
     </PackageReference>
-    <PackageReference Include="Civic.Core.Data" Version="1.27.0" />
+    <PackageReference Include="Civic.Core.Data" Version="1.27.3" />
     <PackageReference Include="Civic.Core.Logging">
-      <Version>1.27.5</Version>
+      <Version>1.27.6</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Net.Compilers">
-      <Version>2.9.0</Version>
+      <Version>2.10.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
