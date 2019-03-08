@@ -76,11 +76,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Civic.Core.Configuration">
-      <Version>1.26.11</Version>
+      <Version>1.26.12</Version>
     </PackageReference>
-    <PackageReference Include="Civic.Core.Data" Version="1.27.9" />
+    <PackageReference Include="Civic.Core.Data" Version="1.27.10" />
     <PackageReference Include="Civic.Core.Logging">
-      <Version>1.27.16</Version>
+      <Version>1.27.17</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Net.Compilers">
       <Version>2.10.0</Version>
