@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Civic.Core.Caching.Providers;
-using Civic.Core.Configuration;
+using Core.Caching.Providers;
+using Core.Configuration;
 
-namespace Civic.Core.Caching.Configuration
+namespace Core.Caching.Configuration
 {
 
 	public class CacheConfig : NamedConfigurationElement
@@ -54,7 +54,9 @@ namespace Civic.Core.Caching.Configuration
                 if (_providers != null) return _providers;
                 if (Children.Count == 0)
                 {
+                    #if NETFULL
                     Children.Add("WebCacheProvider", new CacheProviderElement(new WebCacheProvider()));
+                    #endif
                     Children.Add("SqlCacheProvider",
                         new CacheProviderElement(new SqlCacheProvider(),
                             new NamedConfigurationElement()

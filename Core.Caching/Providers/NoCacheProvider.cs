@@ -1,7 +1,7 @@
 ﻿using System;
-using Civic.Core.Configuration;
+using Core.Configuration;
 
-namespace Civic.Core.Caching.Providers
+namespace Core.Caching.Providers
 {
 	public class NoCacheProvider : ICacheProvider
     {

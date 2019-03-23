@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Resources;
 
-namespace Civic.Core.Caching
+namespace Core.Caching
 {
     internal sealed class SR
     {
@@ -25,7 +25,7 @@ namespace Civic.Core.Caching
 
         internal SR()
         {
-			_resources = new ResourceManager("Civic.Core.Caching.Properties.Resources", GetType().Assembly);
+			_resources = new ResourceManager("Core.Caching.Properties.Resources", GetType().Assembly);
 			_loader = this;
         }
 

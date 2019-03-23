@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Caching;
-using Civic.Core.Configuration;
-using Civic.Core.Logging;
+using Core.Configuration;
+using Core.Logging;
 
-namespace Civic.Core.Caching.Providers
+namespace Core.Caching.Providers
 {
 	public class WebCacheProvider : ICacheProvider
 	{

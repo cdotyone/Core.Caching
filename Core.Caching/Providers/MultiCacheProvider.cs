@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Civic.Core.Configuration;
-using Civic.Core.Logging;
+using Core.Configuration;
+using Core.Logging;
 
-namespace Civic.Core.Caching.Providers
+namespace Core.Caching.Providers
 {
 	public class MultiCacheProvider : ICacheProvider
 	{

@@ -1,4 +1,4 @@
-﻿namespace Civic.Core.Caching
+﻿namespace Core.Caching
 {
     internal class Constants
     {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
-using Civic.Core.Caching.Configuration;
-using Civic.Core.Caching.Providers;
-using Civic.Core.Configuration;
+using Core.Caching.Configuration;
+using Core.Caching.Providers;
+using Core.Configuration;
+using Core.Configuration.Framework;
 
-namespace Civic.Core.Caching
+namespace Core.Caching
 {
     /// <summary>
     /// Provides Caching Abstraction Layer

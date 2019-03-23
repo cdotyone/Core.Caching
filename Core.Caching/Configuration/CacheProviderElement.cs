@@ -1,7 +1,8 @@
-﻿using Civic.Core.Caching.Providers;
-using Civic.Core.Configuration;
+﻿using Core.Caching.Providers;
+using Core.Configuration;
+using Core.Configuration.Framework;
 
-namespace Civic.Core.Caching.Configuration
+namespace Core.Caching.Configuration
 {
 	public class CacheProviderElement : NamedConfigurationElement
     {
@@ -10,7 +11,7 @@ namespace Civic.Core.Caching.Configuration
 	    /// <summary>
 	    /// The "assembly" name given of the provider.
 	    /// 
-	    /// In the form: assembly="Civic.Core.Configuration, Version=1.0.0.0, Culture=neutral"
+	    /// In the form: assembly="Core.Configuration, Version=1.0.0.0, Culture=neutral"
 	    /// </summary>
 	    public string Assembly
 	    {
@@ -27,7 +28,7 @@ namespace Civic.Core.Caching.Configuration
 	    /// <summary>
 	    /// The "type" name of the provider.
 	    /// 
-	    /// In the form of type="Civic.Core.Caching.Providers.WebCacheProvider"
+	    /// In the form of type="Core.Caching.Providers.WebCacheProvider"
 	    /// </summary>
 	    public string Type
 	    {
@@ -42,7 +43,7 @@ namespace Civic.Core.Caching.Configuration
 	    private string _typeName;
 
 		/// <summary>
-		/// Trys to dynamically create the provider and then returns the provider.
+		/// Tries to dynamically create the provider and then returns the provider.
 		/// </summary>
 		public ICacheProvider Provider
 		{

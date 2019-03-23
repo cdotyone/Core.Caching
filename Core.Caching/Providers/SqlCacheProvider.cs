@@ -2,12 +2,11 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using Civic.Core.Configuration;
-using Civic.Core.Data;
-using Civic.Core.Logging;
+using Core.Configuration;
+using Core.Logging;
 using Newtonsoft.Json;
 
-namespace Civic.Core.Caching.Providers
+namespace Core.Caching.Providers
 {
     public class SqlCacheProvider : ICacheProvider
     {
