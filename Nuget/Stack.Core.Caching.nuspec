@@ -23,7 +23,7 @@
     </frameworkAssemblies>
   </metadata>
   <files>
-    <file src="..\Core.Caching\bin\Release\net471\Core.Caching.*" target="lib\net471" />
-    <file src="..\Core.Caching\bin\Release\netstandard2.0\Core.Caching.*" target="lib\netstandard2.0" />
+    <file src="..\Core.Caching\bin\Release\net471\Stack.Core.Caching.*" target="lib\net471" />
+    <file src="..\Core.Caching\bin\Release\netstandard2.0\Stack.Core.Caching.*" target="lib\netstandard2.0" />
   </files>
 </package>

@@ -1,8 +1,8 @@
-﻿using Core.Caching.Providers;
-using Core.Configuration;
-using Core.Configuration.Framework;
+﻿using Stack.Core.Caching.Providers;
+using Stack.Core.Configuration;
+using Stack.Core.Configuration.Framework;
 
-namespace Core.Caching.Configuration
+namespace Stack.Core.Caching.Configuration
 {
 	public class CacheProviderElement : NamedConfigurationElement
     {

@@ -7,10 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{D0BE756F
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		.gitlab-ci.yml = .gitlab-ci.yml
-		Nuget\Core.Caching.nuspec = Nuget\Core.Caching.nuspec
+		Nuget\Stack.Core.Caching.nuspec = Nuget\Stack.Core.Caching.nuspec
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Caching", "Core.Caching\Core.Caching.csproj", "{F8800020-AEC2-46C2-8907-12CFF2CBE3B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stack.Core.Caching", "Core.Caching\Stack.Core.Caching.csproj", "{F8800020-AEC2-46C2-8907-12CFF2CBE3B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Core.Caching.Providers;
-using Core.Configuration;
+using Stack.Core.Caching.Providers;
+using Stack.Core.Configuration;
 
-namespace Core.Caching.Configuration
+namespace Stack.Core.Caching.Configuration
 {
 
 	public class CacheConfig : NamedConfigurationElement

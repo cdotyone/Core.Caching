@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Caching;
-using Core.Configuration;
-using Core.Logging;
+using Stack.Core.Configuration;
+using Stack.Core.Logging;
 
-namespace Core.Caching.Providers
+namespace Stack.Core.Caching.Providers
 {
 	public class WebCacheProvider : ICacheProvider
 	{

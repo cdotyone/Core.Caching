@@ -2,11 +2,11 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using Core.Configuration;
-using Core.Logging;
 using Newtonsoft.Json;
+using Stack.Core.Configuration;
+using Stack.Core.Logging;
 
-namespace Core.Caching.Providers
+namespace Stack.Core.Caching.Providers
 {
     public class SqlCacheProvider : ICacheProvider
     {

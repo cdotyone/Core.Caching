@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading;
-using Core.Caching.Configuration;
-using Core.Caching.Providers;
-using Core.Configuration;
-using Core.Configuration.Framework;
+using Stack.Core.Configuration.Framework;
+using Stack.Core.Caching.Configuration;
+using Stack.Core.Caching.Providers;
 
-namespace Core.Caching
+namespace Stack.Core.Caching
 {
     /// <summary>
     /// Provides Caching Abstraction Layer

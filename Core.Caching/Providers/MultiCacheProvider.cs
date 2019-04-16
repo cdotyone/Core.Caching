@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Configuration;
-using Core.Logging;
+using Stack.Core.Configuration;
+using Stack.Core.Logging;
 
-namespace Core.Caching.Providers
+namespace Stack.Core.Caching.Providers
 {
 	public class MultiCacheProvider : ICacheProvider
 	{
