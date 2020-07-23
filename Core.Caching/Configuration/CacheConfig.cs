@@ -61,7 +61,7 @@ namespace Core.Caching.Configuration
                         new CacheProviderElement(new SqlCacheProvider(),
                             new NamedConfigurationElement()
                             {
-                                Attributes = new Dictionary<string, string> {{"connectionStringName", "CIVIC"}}
+                                Attributes = new Dictionary<string, string> {{"connectionStringName", "core"}}
                             }));
                     Children.Add("TokenCacheProvider",
                         new CacheProviderElement(new MultiCacheProvider(),

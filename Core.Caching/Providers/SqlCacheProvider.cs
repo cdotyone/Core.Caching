@@ -100,13 +100,13 @@ namespace Core.Caching.Providers
                     if (string.IsNullOrEmpty(value))
                     {
                         Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Write - Scope {0} Key {1} - Value Null - Remove", scope, cacheKey);
-                        command.CommandText = "[civic].[usp_CacheRemove]";
+                        command.CommandText = "[core].[usp_CacheRemove]";
                     }
                     else
                     {
                         Logger.LogTrace(LoggingBoundaries.DataLayer, "SqlCacheProvider - Write - Scope {0} Key {1} - Save - {2}", scope, cacheKey, value);
 
-                        command.CommandText = "[civic].[usp_CacheSave]";
+                        command.CommandText = "[core].[usp_CacheSave]";
 
                         param = command.CreateParameter();
                         param.Direction = ParameterDirection.Input;
@@ -147,7 +147,7 @@ namespace Core.Caching.Providers
 
 
                     command.CommandType = CommandType.StoredProcedure;
-                    command.CommandText = "[civic].[usp_CacheGet]";
+                    command.CommandText = "[core].[usp_CacheGet]";
 
                     var param = command.CreateParameter();
                     param.Direction = ParameterDirection.Input;
