@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Resources;
 
-namespace Stack.Core.Caching
+namespace Core.Caching
 {
     internal sealed class SR
     {

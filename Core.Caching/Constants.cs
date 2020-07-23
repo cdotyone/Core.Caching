@@ -1,4 +1,4 @@
-﻿namespace Stack.Core.Caching
+﻿namespace Core.Caching
 {
     internal class Constants
     {

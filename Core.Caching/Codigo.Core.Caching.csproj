@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;netstandard2.0;net48</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>Codigo.Core.Caching</AssemblyName>
+    <RootNamespace>Core.Caching</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
+    <DefineConstants>NETCORE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
+    <DefineConstants>NETCORE;</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net48'">
+    <DefineConstants>NET48;NETFULL</DefineConstants>
+  </PropertyGroup>
+
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net48'">
+    <Compile Remove="Providers\WebCacheProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\References\VersionInfo.cs" Link="VersionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Codigo.Core.Configuration" Version="2.0.19" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="Codigo.Core.Logging" Version="2.0.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Codigo.Core.Caching</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>cdotyone</Authors>
+    <PackageTags>Foundation,Caching</PackageTags>
+    <Title>Codigo Core Caching</Title>
+    <Description>Abstracts caching used by other libraries</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="$(PackageLicenseFile)" />
+  </ItemGroup>
+</Project>

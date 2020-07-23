@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Stack.Core.Caching.Providers;
-using Stack.Core.Configuration;
+using Core.Caching.Providers;
+using Core.Configuration;
 
-namespace Stack.Core.Caching.Configuration
+namespace Core.Caching.Configuration
 {
 
 	public class CacheConfig : NamedConfigurationElement
@@ -27,12 +27,12 @@ namespace Stack.Core.Caching.Configuration
 			{
                 if (_current != null) return _current;
 
-                if (_coreConfig == null) _coreConfig = CivicSection.Current;
+                if (_coreConfig == null) _coreConfig = CoreSection.Current;
                 _current = new CacheConfig(_coreConfig.Children.ContainsKey(SectionName) ? _coreConfig.Children[SectionName] : null);
                 return _current;
             }
 		}
-        private static CivicSection _coreConfig;
+        private static CoreSection _coreConfig;
         private static CacheConfig _current;
 
         /// <summary>
@@ -54,9 +54,9 @@ namespace Stack.Core.Caching.Configuration
                 if (_providers != null) return _providers;
                 if (Children.Count == 0)
                 {
-                    #if NETFULL
-                    Children.Add("WebCacheProvider", new CacheProviderElement(new WebCacheProvider()));
-                    #endif
+                    //#if NETFULL
+                    //Children.Add("WebCacheProvider", new CacheProviderElement(new WebCacheProvider()));
+                    //#endif
                     Children.Add("SqlCacheProvider",
                         new CacheProviderElement(new SqlCacheProvider(),
                             new NamedConfigurationElement()

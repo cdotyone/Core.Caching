@@ -1,7 +1,7 @@
 ﻿using System;
-using Stack.Core.Configuration;
+using Core.Configuration;
 
-namespace Stack.Core.Caching.Providers
+namespace Core.Caching.Providers
 {
 	public class NoCacheProvider : ICacheProvider
     {
